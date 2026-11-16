@@ -1,0 +1,8567 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SchoolFlow — Système scolaire</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#050914;
+  --panel:#0b1220;
+  --panel2:#101a2d;
+  --blue:#3b82f6;
+  --cyan:#38bdf8;
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --border:rgba(148,163,184,.15);
+}
+
+body{
+  font-family:Inter,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
+
+/* ================= LOGO SchoolFlow ================= */
+
+.splash{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  background:
+    radial-gradient(circle at center,rgba(37,99,235,.20),transparent 35%),
+    #030712;
+  transition:opacity .8s ease,visibility .8s ease;
+}
+
+.splash.hide{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+
+.logo{
+  width:190px;
+  height:190px;
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.logo-ring{
+  position:absolute;
+  inset:0;
+  border:2px solid rgba(59,130,246,.4);
+  border-radius:50%;
+  animation:spin 8s linear infinite;
+}
+
+.logo-ring:nth-child(2){
+  inset:17px;
+  border-color:rgba(56,189,248,.35);
+  animation:spinReverse 5s linear infinite;
+}
+
+.logo-ring:nth-child(3){
+  inset:35px;
+  border-color:rgba(99,102,241,.3);
+  animation:pulse 2s infinite;
+}
+
+.book{
+  width:100px;
+  height:68px;
+  position:relative;
+  background:linear-gradient(135deg,#2563eb,#4f46e5);
+  border-radius:7px;
+  box-shadow:0 15px 45px rgba(37,99,235,.5);
+  animation:float 2.5s ease-in-out infinite;
+}
+
+.book:before,
+.book:after{
+  content:"";
+  position:absolute;
+  top:8px;
+  width:41px;
+  height:50px;
+  background:#fff;
+}
+
+.book:before{
+  left:7px;
+  border-radius:5px 2px 2px 5px;
+}
+
+.book:after{
+  right:7px;
+  border-radius:2px 5px 5px 2px;
+}
+
+.cap{
+  position:absolute;
+  width:82px;
+  height:30px;
+  top:55px;
+  z-index:5;
+  animation:capFloat 2.5s ease-in-out infinite;
+}
+
+.cap:before{
+  content:"";
+  position:absolute;
+  width:65px;
+  height:27px;
+  left:8px;
+  background:#111827;
+  transform:rotate(45deg);
+  box-shadow:0 7px 15px #000;
+}
+
+.cap:after{
+  content:"";
+  position:absolute;
+  width:8px;
+  height:32px;
+  background:#facc15;
+  right:3px;
+  top:13px;
+  border-radius:5px;
+  transform:rotate(-20deg);
+}
+
+.particles span{
+  position:absolute;
+  width:5px;
+  height:5px;
+  background:#60a5fa;
+  border-radius:50%;
+  animation:particle 3s infinite;
+}
+
+.particles span:nth-child(1){left:15%;top:30%}
+.particles span:nth-child(2){right:12%;top:20%;animation-delay:.8s}
+.particles span:nth-child(3){left:20%;bottom:15%;animation-delay:1.4s}
+.particles span:nth-child(4){right:18%;bottom:20%;animation-delay:2s}
+
+.logo-title{
+  margin-top:18px;
+  font-size:44px;
+  font-weight:900;
+  letter-spacing:7px;
+  background:linear-gradient(90deg,#60a5fa,#38bdf8,#a5b4fc,#60a5fa);
+  background-size:300%;
+  -webkit-background-clip:text;
+  color:transparent;
+  animation:gradient 4s linear infinite;
+}
+
+.logo-sub{
+  margin-top:8px;
+  color:#94a3b8;
+  font-size:12px;
+  letter-spacing:3px;
+  text-align:center;
+}
+
+.creator{
+  margin-top:25px;
+  text-align:center;
+  color:#64748b;
+  font-size:12px;
+  line-height:1.8;
+}
+
+/* ================= APPLICATION ================= */
+
+.app{
+  min-height:100vh;
+  display:flex;
+}
+
+.sidebar{
+  width:250px;
+  min-height:100vh;
+  background:#070d19;
+  border-right:1px solid var(--border);
+  padding:25px 15px;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+}
+
+.brand{
+  text-align:center;
+  font-size:25px;
+  font-weight:900;
+  letter-spacing:3px;
+  color:#60a5fa;
+  margin-bottom:35px;
+}
+
+.nav button{
+  width:100%;
+  padding:13px 15px;
+  margin:4px 0;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:#94a3b8;
+  text-align:left;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.nav button:hover,
+.nav button.active{
+  background:rgba(59,130,246,.13);
+  color:#fff;
+}
+
+.main{
+  margin-left:250px;
+  width:calc(100% - 250px);
+  padding:30px;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+}
+
+.topbar h1{
+  font-size:27px;
+}
+
+.status{
+  padding:9px 14px;
+  border-radius:30px;
+  background:#0b1728;
+  border:1px solid var(--border);
+  color:#facc15;
+  font-size:13px;
+}
+
+.page{display:none}
+.page.active{display:block}
+
+.card{
+  background:linear-gradient(145deg,#0b1220,#0a111d);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:22px;
+  margin-bottom:20px;
+}
+
+.card h2{
+  font-size:18px;
+  margin-bottom:8px;
+}
+
+.muted{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  margin-bottom:20px;
+}
+
+.stat{
+  padding:20px;
+  border-radius:15px;
+  background:#0b1220;
+  border:1px solid var(--border);
+}
+
+.stat strong{
+  display:block;
+  font-size:30px;
+  margin-top:8px;
+  color:#60a5fa;
+}
+
+.form{
+  display:grid;
+  gap:12px;
+}
+
+input,select,textarea{
+  width:100%;
+  padding:13px 14px;
+  background:#060c17;
+  border:1px solid #1e293b;
+  color:#fff;
+  border-radius:9px;
+  outline:none;
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:#3b82f6;
+}
+
+textarea{
+  min-height:130px;
+  resize:vertical;
+}
+
+.btn{
+  border:0;
+  border-radius:9px;
+  padding:12px 18px;
+  background:#2563eb;
+  color:#fff;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.btn:hover{
+  background:#3b82f6;
+}
+
+.btn.secondary{
+  background:#172033;
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+.student{
+  padding:15px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin-top:10px;
+  background:#09111f;
+}
+
+.student b{
+  color:#fff;
+}
+
+.toast{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  background:#111c30;
+  border:1px solid var(--border);
+  padding:14px 18px;
+  border-radius:10px;
+  display:none;
+  z-index:999999;
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spinReverse{to{transform:rotate(-360deg)}}
+@keyframes pulse{0%,100%{transform:scale(.9);opacity:.3}50%{transform:scale(1.1);opacity:.8}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes capFloat{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-8px) rotate(-5deg)}}
+@keyframes particle{0%,100%{transform:translateY(0);opacity:.2}50%{transform:translateY(-20px);opacity:1}}
+@keyframes gradient{to{background-position:300% center}}
+
+@media(max-width:850px){
+  .sidebar{
+    width:75px;
+    padding:15px 8px;
+  }
+
+  .brand{
+    font-size:16px;
+    writing-mode:vertical-rl;
+    margin:auto auto 20px;
+  }
+
+  .nav button{
+    text-align:center;
+    font-size:0;
+  }
+
+  .nav button:first-letter{
+    font-size:20px;
+  }
+
+  .main{
+    margin-left:75px;
+    width:calc(100% - 75px);
+    padding:18px;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .grid2{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+
+<style id="school-flow-school-input-fix">
+#schoolInput{
+  pointer-events:auto !important;
+  user-select:text !important;
+  -webkit-user-select:text !important;
+  cursor:text !important;
+  opacity:1 !important;
+}
+</style>
+
+
+<style id="school-flow-red-ui-v1">
+/* SCHOOL FLOW — RED UI V1 */
+
+:root {
+  --sf-red: #e50914;
+  --sf-red-dark: #a80710;
+  --sf-red-soft: #ff3340;
+  --sf-black: #050505;
+  --sf-panel: #111111;
+  --sf-text: #ffffff;
+  --sf-muted: #a7a7a7;
+}
+
+#schoolFlowRedIntro,
+#schoolFlowRedGate {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(229,9,20,.18), transparent 32%),
+    linear-gradient(145deg, #050505 0%, #090909 55%, #120304 100%);
+  color: var(--sf-text);
+  overflow: hidden;
+}
+
+#schoolFlowRedIntro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: opacity .7s ease, visibility .7s ease;
+}
+
+#schoolFlowRedIntro.sf-intro-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.sf-intro-content {
+  width: min(92vw, 560px);
+  padding: 30px;
+  animation: sfIntroIn 1s ease both;
+}
+
+.sf-logo-mark {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 22px;
+  border: 2px solid rgba(229,9,20,.8);
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, rgba(229,9,20,.20), rgba(255,255,255,.02));
+  box-shadow: 0 0 45px rgba(229,9,20,.20), inset 0 0 25px rgba(229,9,20,.08);
+  animation: sfLogoFloat 2.8s ease-in-out infinite;
+}
+
+.sf-logo-mark span {
+  font-size: 42px;
+}
+
+.sf-intro-title {
+  margin: 0;
+  font-size: clamp(30px, 8vw, 54px);
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.sf-intro-title b {
+  color: var(--sf-red-soft);
+}
+
+.sf-intro-subtitle {
+  margin: 16px 0 0;
+  color: #d0d0d0;
+  font-size: clamp(14px, 3.8vw, 19px);
+}
+
+.sf-intro-line {
+  width: 90px;
+  height: 3px;
+  margin: 24px auto;
+  border-radius: 99px;
+  background: linear-gradient(90deg, transparent, var(--sf-red), transparent);
+  animation: sfLine 1.8s ease-in-out infinite;
+}
+
+.sf-intro-school {
+  color: #888;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.sf-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sf-particles i {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--sf-red);
+  opacity: .35;
+  animation: sfParticle 5s linear infinite;
+}
+
+.sf-particles i:nth-child(1){left:12%;top:78%;animation-delay:.2s}
+.sf-particles i:nth-child(2){left:25%;top:20%;animation-delay:1s}
+.sf-particles i:nth-child(3){left:73%;top:70%;animation-delay:1.8s}
+.sf-particles i:nth-child(4){left:86%;top:28%;animation-delay:2.5s}
+.sf-particles i:nth-child(5){left:53%;top:84%;animation-delay:3.1s}
+.sf-particles i:nth-child(6){left:40%;top:12%;animation-delay:3.7s}
+
+#schoolFlowRedGate {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#schoolFlowRedGate.sf-gate-visible {
+  display: flex;
+}
+
+#schoolFlowRedGate .sf-login-shell {
+  width: min(100%, 470px);
+  animation: sfLoginIn .65s ease both;
+}
+
+.sf-login-brand {
+  text-align: center;
+  margin-bottom: 26px;
+}
+
+.sf-login-brand .sf-mini-logo {
+  width: 66px;
+  height: 66px;
+  margin: 0 auto 15px;
+  border-radius: 20px;
+  border: 1px solid rgba(229,9,20,.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0c0c0c;
+  box-shadow: 0 0 30px rgba(229,9,20,.15);
+  font-size: 28px;
+}
+
+.sf-login-brand h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 27px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.sf-login-brand p {
+  margin: 8px 0 0;
+  color: #999;
+  font-size: 13px;
+}
+
+#schoolFlowRedGate #loginAccountBox {
+  display: block !important;
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 28px !important;
+  box-sizing: border-box !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-top: 2px solid var(--sf-red) !important;
+  border-radius: 20px !important;
+  background: rgba(15,15,15,.96) !important;
+  box-shadow: 0 25px 80px rgba(0,0,0,.55), 0 0 35px rgba(229,9,20,.08) !important;
+}
+
+#schoolFlowRedGate #loginAccountBox input {
+  background: #080808 !important;
+  color: #fff !important;
+  border-color: #292929 !important;
+}
+
+#schoolFlowRedGate #loginAccountBox input:focus {
+  border-color: var(--sf-red) !important;
+  box-shadow: 0 0 0 3px rgba(229,9,20,.12) !important;
+  outline: none !important;
+}
+
+#schoolFlowRedGate #loginAccountBox button {
+  background: linear-gradient(135deg, var(--sf-red), var(--sf-red-dark)) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 10px 25px rgba(229,9,20,.18) !important;
+}
+
+.sf-security-note {
+  text-align: center;
+  margin-top: 16px;
+  color: #666;
+  font-size: 11px;
+}
+
+@keyframes sfIntroIn {
+  from { opacity: 0; transform: translateY(22px) scale(.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes sfLoginIn {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sfLogoFloat {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-7px) rotate(-2deg); }
+}
+
+@keyframes sfLine {
+  0%,100% { transform: scaleX(.55); opacity: .45; }
+  50% { transform: scaleX(1); opacity: 1; }
+}
+
+@keyframes sfParticle {
+  0% { transform: translateY(35px); opacity: 0; }
+  20% { opacity: .4; }
+  80% { opacity: .25; }
+  100% { transform: translateY(-130px); opacity: 0; }
+}
+
+@media (max-width: 600px) {
+  #schoolFlowRedGate {
+    padding: 14px;
+  }
+
+  #schoolFlowRedGate #loginAccountBox {
+    padding: 22px !important;
+    border-radius: 17px !important;
+  }
+}
+</style>
+
+
+<style id="schoolFlowResponsiveTabletPc">
+
+/* SCHOOL_FLOW_RESPONSIVE_TABLET_PC_V1 */
+
+/* SCHOOL FLOW — RESPONSIVE TABLETTE / PC V1 */
+/* Couche visuelle uniquement. */
+/* Backend / WhatsApp / Bot / Paiements / Auth : inchangés. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.main {
+  min-width: 0;
+  max-width: none;
+}
+
+.sidebar {
+  flex-shrink: 0;
+}
+
+/* PC LARGE */
+
+@media (min-width: 1200px) {
+
+  .sidebar {
+    width: 250px;
+  }
+
+  .main {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    min-width: 0;
+    padding: 24px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .grid2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    max-width: 100%;
+  }
+}
+
+/* PC / TABLETTE LARGE */
+
+@media (min-width: 851px) and (max-width: 1199px) {
+
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+    padding: 20px 12px;
+  }
+
+  .main {
+    margin-left: 220px;
+    width: calc(100% - 220px);
+    min-width: 0;
+    padding: 20px;
+  }
+
+  .brand {
+    font-size: 18px;
+    writing-mode: horizontal-tb;
+    margin: 0 0 24px;
+  }
+
+  .nav button {
+    width: 100%;
+    min-height: 46px;
+    text-align: left;
+    font-size: 14px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .grid2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    max-width: 100%;
+  }
+}
+
+/* TABLETTE */
+
+@media (min-width: 601px) and (max-width: 850px) {
+
+  .sidebar {
+    width: 210px;
+    min-width: 210px;
+    padding: 18px 12px;
+  }
+
+  .main {
+    margin-left: 210px;
+    width: calc(100% - 210px);
+    min-width: 0;
+    padding: 18px;
+  }
+
+  .brand {
+    font-size: 17px;
+    writing-mode: horizontal-tb;
+    margin: 0 0 20px;
+    text-align: center;
+  }
+
+  .nav button {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 14px;
+  }
+
+  .nav button:first-letter {
+    font-size: inherit;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .grid2 {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  button,
+  .btn {
+    min-height: 44px;
+  }
+
+  #schoolFlowRedGate {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  #schoolFlowRedGate .sf-login-shell {
+    width: min(100%, 520px);
+  }
+}
+
+/* PETITE TABLETTE */
+
+@media (min-width: 601px) and (max-width: 700px) {
+
+  .sidebar {
+    width: 190px;
+    min-width: 190px;
+  }
+
+  .main {
+    margin-left: 190px;
+    width: calc(100% - 190px);
+    padding: 14px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .nav button {
+    font-size: 13px;
+    padding: 9px 10px;
+  }
+}
+
+/* FORMULAIRES TABLETTE / PC */
+
+@media (min-width: 601px) {
+
+  input,
+  select,
+  textarea {
+    box-sizing: border-box;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .main > *,
+  .main section,
+  .main article,
+  .main form {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .toast {
+    max-width: min(420px, calc(100vw - 40px));
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+  html,
+  body {
+    width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  img,
+  input,
+  select,
+  textarea,
+  button {
+    max-width: 100%;
+  }
+
+  #schoolFlowRedGate {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+</style>
+
+<style id="schoolFlowLoginTabletIsolation">
+/* SCHOOL_FLOW_LOGIN_TABLET_ISOLATION_V2 */
+
+/* ÉCRAN DE CONNEXION — ISOLATION TABLETTE / PC */
+
+#schoolFlowRedGate {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+
+  width: 100vw !important;
+  height: 100vh !important;
+  min-width: 100vw !important;
+  min-height: 100vh !important;
+
+  z-index: 2147483647 !important;
+
+  background-color: #050505 !important;
+  background-image:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(229,9,20,.18),
+      transparent 32%
+    ),
+    linear-gradient(
+      145deg,
+      #050505 0%,
+      #090909 55%,
+      #120304 100%
+    ) !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+
+  isolation: isolate !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+}
+
+#schoolFlowRedGate.sf-gate-visible {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#schoolFlowRedGate .sf-login-shell {
+  position: relative !important;
+  z-index: 2147483647 !important;
+  width: min(100%, 470px) !important;
+  max-width: 470px !important;
+  margin: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Les anciens écrans ne doivent jamais passer devant le login. */
+#schoolAccountScreen,
+.splash {
+  z-index: 1 !important;
+}
+
+/* Les éléments du tableau de bord restent derrière le portail. */
+.sidebar,
+.main,
+.page,
+#dashboard,
+#students,
+#classes,
+#payments,
+#messages,
+#convocations,
+#bot,
+#whatsapp,
+#settings {
+  position: relative;
+  z-index: 1;
+}
+
+/* Le portail reste toujours au-dessus. */
+#schoolFlowRedIntro,
+#schoolFlowRedGate {
+  z-index: 2147483647 !important;
+}
+
+#schoolFlowRedGate #loginAccountBox {
+  position: relative !important;
+  z-index: 2147483647 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+</style>
+
+<style id="schoolFlowRemoveLegacyBlueUI">
+/* SCHOOL_FLOW_REMOVE_LEGACY_BLUE_UI_V1 */
+
+/* Ancienne interface bleue devenue inutile après la nouvelle refonte. */
+.splash,
+#schoolAccountScreen {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* La nouvelle interface SCHOOL FLOW reste prioritaire. */
+#schoolFlowRedIntro,
+#schoolFlowRedGate {
+  z-index: 2147483647 !important;
+}
+
+</style>
+
+<style id="schoolFlowLoginLockIpad">
+/* SCHOOL_FLOW_LOGIN_LOCK_IPAD_V3 */
+
+/* =========================================================
+   SCHOOL FLOW — ÉCRAN DE CONNEXION VERROUILLÉ
+   TABLETTE / IPAD / PC
+   ========================================================= */
+
+/* Pendant la connexion : aucune ancienne interface visible. */
+html.sf-red-auth-active,
+body.sf-red-auth-active {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+/* On retire visuellement tous les anciens éléments de l'application. */
+body.sf-red-auth-active > *:not(#schoolFlowRedIntro):not(#schoolFlowRedGate):not(#sfDevicePicker) {
+  display: none !important;
+}
+
+/* L'ancien écran bleu ne doit jamais revenir pendant le login. */
+body.sf-red-auth-active .splash,
+body.sf-red-auth-active #schoolAccountScreen,
+body.sf-red-auth-active .sidebar,
+body.sf-red-auth-active .main,
+body.sf-red-auth-active .page,
+body.sf-red-auth-active #dashboard {
+  display: none !important;
+}
+
+/* Le nouveau portail est le SEUL élément affiché. */
+body.sf-red-auth-active > #schoolFlowRedGate {
+  display: flex !important;
+
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+
+  width: 100vw !important;
+  height: 100vh !important;
+
+  margin: 0 !important;
+  padding: 20px !important;
+
+  z-index: 2147483647 !important;
+
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+
+  background-color: #050505 !important;
+  isolation: isolate !important;
+}
+
+/* Le contenu du login reste centré et visible. */
+body.sf-red-auth-active > #schoolFlowRedGate .sf-login-shell {
+  position: relative !important;
+  z-index: 2147483647 !important;
+
+  width: min(100%, 470px) !important;
+  max-width: 470px !important;
+
+  margin: auto !important;
+
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Le formulaire lui-même. */
+body.sf-red-auth-active > #schoolFlowRedGate #loginAccountBox {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* L'intro reste au-dessus uniquement pendant son animation. */
+body.sf-red-auth-active > #schoolFlowRedIntro {
+  z-index: 2147483647 !important;
+}
+
+/* Après disparition de l'intro, elle ne bloque rien. */
+#schoolFlowRedIntro.sf-intro-hidden {
+  pointer-events: none !important;
+}
+
+/* Empêche les rebonds de page sur iPad/Safari. */
+@supports (-webkit-touch-callout: none) {
+  html.sf-red-auth-active,
+  body.sf-red-auth-active {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+  }
+}
+
+</style>
+
+<style id="schoolFlowIntroExclusive">
+/* SCHOOL_FLOW_INTRO_EXCLUSIVE_V1 */
+
+/* =========================================================
+   SCHOOL FLOW — INTRODUCTION EXCLUSIVE
+   Pendant les 5 secondes, RIEN de l'ancienne interface
+   ne doit être visible derrière l'animation.
+   ========================================================= */
+
+html,
+body {
+  background: #050505 !important;
+}
+
+/* L'intro devient le seul écran visible pendant l'animation. */
+#schoolFlowRedIntro {
+  position: fixed !important;
+  inset: 0 !important;
+
+  width: 100vw !important;
+  height: 100vh !important;
+
+  min-width: 100vw !important;
+  min-height: 100vh !important;
+
+  margin: 0 !important;
+
+  display: flex !important;
+
+  z-index: 2147483647 !important;
+
+  visibility: visible !important;
+  opacity: 1 !important;
+
+  pointer-events: auto !important;
+
+  overflow: hidden !important;
+
+  background-color: #050505 !important;
+  background-image:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(229,9,20,.18),
+      transparent 32%
+    ),
+    linear-gradient(
+      145deg,
+      #050505 0%,
+      #090909 55%,
+      #120304 100%
+    ) !important;
+
+  isolation: isolate !important;
+}
+
+/* Toutes les anciennes couches passent derrière l'intro. */
+#schoolFlowRedIntro ~ * {
+  position: relative !important;
+  z-index: 0 !important;
+}
+
+/* Même les anciens écrans fixes restent derrière. */
+#schoolFlowRedIntro ~ .splash,
+#schoolFlowRedIntro ~ #schoolAccountScreen,
+#schoolFlowRedIntro ~ .sidebar,
+#schoolFlowRedIntro ~ .main,
+#schoolFlowRedIntro ~ #dashboard {
+  z-index: 0 !important;
+}
+
+/* Le contenu de l'intro reste au-dessus de son propre fond. */
+#schoolFlowRedIntro .sf-intro-content,
+#schoolFlowRedIntro .sf-particles {
+  z-index: 1 !important;
+}
+
+/* Pendant l'animation, aucun défilement de la page. */
+html:has(#schoolFlowRedIntro:not(.sf-intro-hidden)),
+body:has(#schoolFlowRedIntro:not(.sf-intro-hidden)) {
+  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+</style>
+
+<style id="schoolFlowLoginFinalFix">
+/* SCHOOL_FLOW_LOGIN_FINAL_FIX_V1 */
+
+/* Écran de connexion totalement fixe */
+html.sf-red-auth-active,
+body.sf-red-auth-active {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+
+  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+
+  overscroll-behavior: none !important;
+  touch-action: none !important;
+}
+
+/* Le champ reste utilisable malgré le verrouillage de la page */
+html.sf-red-auth-active input,
+html.sf-red-auth-active button,
+html.sf-red-auth-active textarea {
+  touch-action: auto !important;
+}
+
+/* Portail rouge fixe */
+body.sf-red-auth-active > #schoolFlowRedGate {
+  position: fixed !important;
+  inset: 0 !important;
+
+  width: 100vw !important;
+  height: 100vh !important;
+
+  display: flex !important;
+
+  overflow: hidden !important;
+
+  z-index: 2147483647 !important;
+
+  pointer-events: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Le contenu du formulaire peut être utilisé */
+body.sf-red-auth-active > #schoolFlowRedGate .sf-login-shell {
+  position: relative !important;
+
+  width: min(470px, calc(100vw - 40px)) !important;
+  max-width: 470px !important;
+
+  max-height: calc(100vh - 40px) !important;
+
+  margin: auto !important;
+
+  overflow: visible !important;
+
+  z-index: 2147483647 !important;
+}
+
+/* Le formulaire reste cliquable */
+body.sf-red-auth-active > #schoolFlowRedGate #loginAccountBox,
+body.sf-red-auth-active > #schoolFlowRedGate #loginAccountBox input,
+body.sf-red-auth-active > #schoolFlowRedGate #loginAccountBox button {
+  pointer-events: auto !important;
+}
+
+/* Aucun ancien élément visible pendant la connexion */
+body.sf-red-auth-active > *:not(#schoolFlowRedIntro):not(#schoolFlowRedGate):not(#sfDevicePicker) {
+  display: none !important;
+}
+
+</style>
+
+<style id="school-flow-red-theme">
+
+/* ============================================================
+   SCHOOL FLOW — THÈME ROUGE GLOBAL
+   Le fond sombre existant est conservé.
+   ============================================================ */
+
+:root {
+  --sf-primary: #e50914;
+  --sf-primary-strong: #ff1a25;
+  --sf-primary-dark: #a80710;
+  --sf-primary-soft: rgba(229, 9, 20, .14);
+  --sf-primary-border: rgba(229, 9, 20, .42);
+  --sf-primary-glow: rgba(229, 9, 20, .28);
+}
+
+/* Accents généraux */
+body {
+  --primary: #e50914 !important;
+  --accent: #e50914 !important;
+  --main-color: #e50914 !important;
+  --brand-color: #e50914 !important;
+}
+
+/* Liens */
+a {
+  color: var(--sf-primary) !important;
+}
+
+/* Boutons */
+button,
+.btn,
+input[type="button"],
+input[type="submit"] {
+  border-color: var(--sf-primary-border) !important;
+}
+
+button:hover,
+.btn:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover {
+  border-color: var(--sf-primary) !important;
+  box-shadow: 0 0 18px var(--sf-primary-glow) !important;
+}
+
+/* Boutons principaux */
+button.btn,
+.btn-primary,
+button[type="submit"] {
+  background: linear-gradient(
+    135deg,
+    var(--sf-primary-dark),
+    var(--sf-primary)
+  ) !important;
+  color: #fff !important;
+}
+
+/* Navigation */
+nav button,
+.sidebar button,
+.menu button,
+header button {
+  color: inherit;
+}
+
+nav button.active,
+.sidebar button.active,
+.menu button.active,
+nav button[aria-selected="true"],
+.sidebar button[aria-selected="true"] {
+  color: #fff !important;
+  background: var(--sf-primary-soft) !important;
+  border-color: var(--sf-primary-border) !important;
+  box-shadow: inset 3px 0 0 var(--sf-primary) !important;
+}
+
+/* Cartes */
+.card,
+.student {
+  border-color: rgba(229, 9, 20, .20) !important;
+}
+
+.card:hover,
+.student:hover {
+  border-color: var(--sf-primary-border) !important;
+  box-shadow: 0 0 20px rgba(229, 9, 20, .10) !important;
+}
+
+/* Champs */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--sf-primary) !important;
+  outline-color: var(--sf-primary) !important;
+  box-shadow: 0 0 0 2px var(--sf-primary-soft) !important;
+}
+
+/* Sélection */
+::selection {
+  background: var(--sf-primary) !important;
+  color: #fff !important;
+}
+
+/* Éléments accentués inline */
+[style*="#2196"],
+[style*="#1976"],
+[style*="#03a9"],
+[style*="#0d6efd"],
+[style*="rgb(33, 150"],
+[style*="rgb(25, 118"] {
+  color: var(--sf-primary) !important;
+}
+
+/* Barres / indicateurs */
+.progress,
+.progress-bar,
+.badge-primary,
+.status-primary {
+  background: var(--sf-primary) !important;
+}
+
+/* Cases et éléments actifs */
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+  accent-color: var(--sf-primary) !important;
+}
+
+/* Petits accents */
+h1::first-letter,
+h2::first-letter {
+  color: inherit;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar-thumb {
+  background: var(--sf-primary-dark) !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sf-primary) !important;
+}
+
+/* Liens WhatsApp / actions */
+.whatsapp,
+.whatsapp-btn,
+[data-whatsapp] {
+  border-color: var(--sf-primary-border) !important;
+}
+
+/* ============================================================
+   EXCLUSIONS
+   ============================================================ */
+
+.sf-exclusion-actions {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(180px, 1fr)
+  );
+  gap: 12px;
+  margin: 22px 0;
+}
+
+.sf-exclusion-button {
+  min-height: 52px;
+  font-weight: 700;
+}
+
+.sf-exclusion-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, .78);
+  backdrop-filter: blur(7px);
+}
+
+.sf-exclusion-modal.show {
+  display: flex;
+}
+
+.sf-exclusion-box {
+  width: min(620px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 24px;
+  border-radius: 18px;
+  background: #111;
+  border: 1px solid var(--sf-primary-border);
+  box-shadow:
+    0 0 35px rgba(229, 9, 20, .18),
+    0 20px 70px rgba(0, 0, 0, .65);
+}
+
+.sf-exclusion-box h2 {
+  margin-top: 0;
+}
+
+.sf-exclusion-box label {
+  display: block;
+  margin: 15px 0 7px;
+  font-weight: 700;
+}
+
+.sf-exclusion-box input,
+.sf-exclusion-box select,
+.sf-exclusion-box textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sf-exclusion-preview {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(229, 9, 20, .07);
+  border: 1px solid rgba(229, 9, 20, .20);
+  white-space: pre-wrap;
+  line-height: 1.55;
+}
+
+.sf-exclusion-status {
+  margin-top: 14px;
+  font-weight: 700;
+}
+
+
+/* SCHOOL FLOW RESPONSIVE SAFE PATCH */
+@media (max-width: 850px) {
+  #payments {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  #payments input,
+  #payments select,
+  #payments textarea,
+  #payments button {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  #paymentsStudentsList > * {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+  #paymentEntryCard,
+  #paymentHistoryCard {
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+@media (max-width: 600px) {
+  #payments {
+    padding: 12px !important;
+  }
+  #payments input,
+  #payments select,
+  #payments textarea {
+    width: 100%;
+    min-width: 0;
+    font-size: 16px;
+  }
+  #payments button {
+    min-height: 42px;
+    white-space: normal;
+  }
+  img, video, canvas {
+    max-width: 100%;
+    height: auto;
+  }
+}
+@media (min-width: 601px) and (max-width: 1024px) {
+  #payments {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+/* END SCHOOL FLOW RESPONSIVE SAFE PATCH */
+
+</style>
+
+
+<style id="schoolFlowDevicePickerStyle">
+/* SCHOOL_FLOW_DEVICE_PICKER_V1 */
+#sfDevicePicker {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 22px;
+  background:
+    radial-gradient(ellipse at top, rgba(229,9,20,.18), transparent 55%),
+    #050505;
+  color: #fff;
+  font-family: Inter, Arial, sans-serif;
+}
+#sfDevicePicker .sf-device-panel {
+  width: min(100%, 760px);
+  margin: auto;
+  padding: 28px;
+  border: 1px solid rgba(229,9,20,.45);
+  border-radius: 22px;
+  background: linear-gradient(145deg,#151515,#090909);
+  box-shadow: 0 20px 70px rgba(0,0,0,.45);
+}
+#sfDevicePicker .sf-device-kicker {
+  color: #ff424b;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+#sfDevicePicker h2 {
+  margin: 12px 0;
+  font-size: clamp(25px,4vw,36px);
+}
+#sfDevicePicker .sf-device-description {
+  color: #aaa;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+#sfDevicePicker .sf-device-options {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 12px;
+}
+#sfDevicePicker .sf-device-option {
+  min-width: 0;
+  min-height: 145px;
+  padding: 20px 10px;
+  border: 1px solid #363636;
+  border-radius: 15px;
+  color: white;
+  background: #111;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color .2s, transform .2s, background .2s;
+}
+#sfDevicePicker .sf-device-option:hover,
+#sfDevicePicker .sf-device-option:focus-visible {
+  border-color: #e50914;
+  background: #211012;
+  transform: translateY(-2px);
+  outline: none;
+}
+#sfDevicePicker .sf-device-icon {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 35px;
+}
+#sfDevicePicker .sf-device-name {
+  display: block;
+  font-weight: 800;
+  font-size: 15px;
+}
+#sfDevicePicker .sf-device-hint {
+  display: block;
+  margin-top: 7px;
+  color: #aaa;
+  font-size: 12px;
+  line-height: 1.4;
+}
+body.sf-device-phone .main {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  padding: 12px !important;
+}
+body.sf-device-phone .stats {
+  grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  gap: 10px !important;
+}
+body.sf-device-phone .card {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+body.sf-device-tablet .main {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  padding: 20px !important;
+}
+body.sf-device-tablet .stats {
+  grid-template-columns: repeat(3,minmax(0,1fr)) !important;
+}
+body.sf-device-desktop .main {
+  min-width: 0 !important;
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 28px !important;
+}
+body.sf-device-desktop .stats {
+  grid-template-columns: repeat(4,minmax(0,1fr)) !important;
+}
+@media(max-width:600px) {
+  #sfDevicePicker .sf-device-panel { padding: 20px 15px; }
+  #sfDevicePicker .sf-device-options { grid-template-columns: 1fr; }
+  #sfDevicePicker .sf-device-option {
+    min-height: 85px;
+    padding: 13px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    text-align: left;
+  }
+  #sfDevicePicker .sf-device-icon {
+    margin: 0;
+    width: 43px;
+    flex-shrink: 0;
+  }
+  #sfDevicePicker .sf-device-hint { margin-top: 4px; }
+  body.sf-device-tablet .stats,
+  body.sf-device-desktop .stats {
+    grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  }
+}
+</style>
+
+
+<style id="schoolFlowResponsiveRefinement">
+/* SCHOOL_FLOW_RESPONSIVE_REFINEMENT_V2 */
+html, body { width:100%; max-width:100%; }
+body.sf-device-phone .sidebar { max-width:100%; }
+body.sf-device-phone .main,
+body.sf-device-tablet .main,
+body.sf-device-desktop .main { min-width:0; }
+body.sf-device-phone input,
+body.sf-device-phone select,
+body.sf-device-phone textarea,
+body.sf-device-phone button { max-width:100%; }
+body.sf-device-phone table { display:block; max-width:100%; overflow-x:auto; }
+body.sf-device-phone .card,
+body.sf-device-tablet .card,
+body.sf-device-desktop .card { overflow-wrap:anywhere; }
+body.sf-device-phone .stats { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+body.sf-device-tablet .stats { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
+body.sf-device-desktop .stats { grid-template-columns:repeat(4,minmax(0,1fr)) !important; }
+@media(max-width:600px) {
+  body.sf-device-tablet .stats,
+  body.sf-device-desktop .stats { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+  body.sf-device-phone .main { padding:10px !important; }
+  body.sf-device-phone .sidebar button,
+  body.sf-device-phone .sidebar a { min-height:42px; }
+}
+</style>
+
+<style id="sf-device-picker-auth-fix">
+/* SCHOOL FLOW — autoriser le sélecteur d'appareil pendant la connexion */
+body.sf-red-auth-active > #sfDevicePicker {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  z-index: 2147483647 !important;
+}
+</style>
+
+<!-- SCHOOL FLOW PWA HEAD -->
+<meta name="theme-color" content="#050914">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="School Flow">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+
+</head>
+
+<body>
+
+<!-- SCHOOL FLOW — RED INTRO V1 -->
+<div id="schoolFlowRedIntro">
+  <div class="sf-particles">
+    <i></i><i></i><i></i><i></i><i></i><i></i>
+  </div>
+
+  <div class="sf-intro-content">
+    <div class="sf-logo-mark">
+      <span>✏️</span>
+    </div>
+
+    <h1 class="sf-intro-title">
+      SCHOOL <b>FLOW</b>
+    </h1>
+
+    <div class="sf-intro-line"></div>
+
+    <p class="sf-intro-subtitle">
+      L'école connectée, simplement.
+    </p>
+
+    <div class="sf-intro-school">
+      Élèves • Parents • Direction • Communication
+    </div>
+  </div>
+</div>
+
+<div id="schoolFlowRedGate">
+  <div class="sf-login-shell">
+
+    <div class="sf-login-brand">
+      <div class="sf-mini-logo">✏️</div>
+      <h1>SCHOOL FLOW</h1>
+      <p>L'école connectée, simplement.</p>
+    </div>
+
+    <div id="schoolFlowOriginalLoginMount"></div>
+
+    <div class="sf-security-note">
+      Accès sécurisé à votre établissement
+    </div>
+
+  </div>
+</div>
+
+
+<!-- SPLASH SchoolFlow -->
+<div class="splash" id="splash">
+
+  <div class="logo">
+
+    <div class="logo-ring"></div>
+    <div class="logo-ring"></div>
+    <div class="logo-ring"></div>
+
+    <div class="particles">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <div class="book"></div>
+    <div class="cap"></div>
+
+  </div>
+
+  <div class="logo-title">SchoolFlow</div>
+
+  <div class="logo-sub">
+    LA TECHNOLOGIE AU SERVICE DE L'ÉDUCATION
+  </div>
+
+  <div class="creator">
+    Créé par <strong>Weber Mandonga</strong><br>
+    Supervisé par <strong>Ephraim Amani</strong>
+  </div>
+
+</div>
+
+
+<!-- ================= COMPTES ÉTABLISSEMENT ================= -->
+<div id="schoolAccountScreen" style="
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#050b16;
+  padding:20px;
+  box-sizing:border-box;
+">
+
+  <div style="
+    width:100%;
+    max-width:460px;
+    background:#0b1424;
+    border:1px solid #1e3a5f;
+    border-radius:22px;
+    padding:32px;
+    box-shadow:0 25px 80px rgba(0,0,0,.55);
+    box-sizing:border-box;
+  ">
+
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="
+        font-size:30px;
+        font-weight:900;
+        letter-spacing:4px;
+        color:#60a5fa;
+      ">SchoolFlow</div>
+
+      <div style="
+        margin-top:8px;
+        color:#94a3b8;
+        font-size:13px;
+      ">Communication scolaire</div>
+    </div>
+
+    <div id="loginAccountBox">
+
+      <h2 style="
+        color:#f8fafc;
+        text-align:center;
+        margin:0 0 8px;
+      ">Connexion</h2>
+
+      <p style="
+        color:#94a3b8;
+        text-align:center;
+        font-size:13px;
+        margin:0 0 24px;
+      ">Connectez-vous à votre établissement</p>
+
+      <input
+        id="accountEmail"
+        type="email"
+        placeholder="Adresse email de l’établissement"
+        style="
+          width:100%;
+          box-sizing:border-box;
+          padding:14px;
+          border-radius:12px;
+          border:1px solid #263b58;
+          background:#07101e;
+          color:white;
+          outline:none;
+          margin-bottom:12px;
+        "
+      >
+
+      <input
+        id="accountPassword"
+        type="password"
+        placeholder="Mot de passe"
+        style="
+          width:100%;
+          box-sizing:border-box;
+          padding:14px;
+          border-radius:12px;
+          border:1px solid #263b58;
+          background:#07101e;
+          color:white;
+          outline:none;
+          margin-bottom:12px;
+        "
+      >
+
+      <button
+        onclick="loginSchoolFlow()"
+        style="
+          width:100%;
+          padding:14px;
+          border:0;
+          border-radius:12px;
+          background:#2563eb;
+          color:white;
+          font-weight:800;
+          cursor:pointer;
+        "
+      >Se connecter</button>
+
+      <button type="button"
+        onclick="showRegisterSchoolFlow(); return false;"
+        style="
+          width:100%;
+          margin-top:12px;
+          padding:12px;
+          border:1px solid #334155;
+          border-radius:12px;
+          background:transparent;
+          color:#93c5fd;
+          font-weight:700;
+          cursor:pointer;
+        "
+      >Créer un établissement</button>
+
+    </div>
+
+    <div id="registerAccountBox" style="display:none;">
+
+      <h2 style="
+        color:#f8fafc;
+        text-align:center;
+        margin:0 0 8px;
+      ">Créer un établissement</h2>
+
+      <p style="
+        color:#94a3b8;
+        text-align:center;
+        font-size:13px;
+        margin:0 0 24px;
+      ">Enregistrez votre établissement dans SchoolFlow</p>
+
+      <input
+        id="registerSchoolName"
+        type="text"
+        placeholder="Nom de l’établissement"
+        style="
+          width:100%;
+          box-sizing:border-box;
+          padding:14px;
+          border-radius:12px;
+          border:1px solid #263b58;
+          background:#07101e;
+          color:white;
+          outline:none;
+          margin-bottom:12px;
+        "
+      >
+
+      <input
+        id="registerEmail"
+        type="email"
+        placeholder="Adresse email"
+        style="
+          width:100%;
+          box-sizing:border-box;
+          padding:14px;
+          border-radius:12px;
+          border:1px solid #263b58;
+          background:#07101e;
+          color:white;
+          outline:none;
+          margin-bottom:12px;
+        "
+      >
+
+      <input
+        id="registerPassword"
+        type="password"
+        placeholder="Mot de passe (8 caractères minimum)"
+        style="
+          width:100%;
+          box-sizing:border-box;
+          padding:14px;
+          border-radius:12px;
+          border:1px solid #263b58;
+          background:#07101e;
+          color:white;
+          outline:none;
+          margin-bottom:12px;
+        "
+      >
+
+      <input
+        id="registerPasswordConfirm"
+        type="password"
+        placeholder="Confirmer le mot de passe"
+        style="
+          width:100%;
+          box-sizing:border-box;
+          padding:14px;
+          border-radius:12px;
+          border:1px solid #263b58;
+          background:#07101e;
+          color:white;
+          outline:none;
+          margin-bottom:12px;
+        "
+      >
+
+      <button
+        onclick="registerSchoolFlow()"
+        style="
+          width:100%;
+          padding:14px;
+          border:0;
+          border-radius:12px;
+          background:#2563eb;
+          color:white;
+          font-weight:800;
+          cursor:pointer;
+        "
+      >Créer mon établissement</button>
+
+      <button
+        onclick="showLoginSchoolFlow()"
+        style="
+          width:100%;
+          margin-top:12px;
+          padding:12px;
+          border:1px solid #334155;
+          border-radius:12px;
+          background:transparent;
+          color:#93c5fd;
+          font-weight:700;
+          cursor:pointer;
+        "
+      >Retour à la connexion</button>
+
+    </div>
+
+    <div
+      id="accountMessage"
+      style="
+        min-height:20px;
+        margin-top:18px;
+        text-align:center;
+        color:#94a3b8;
+        font-size:13px;
+      "
+    ></div>
+
+    <div style="
+      margin-top:24px;
+      text-align:center;
+      color:#64748b;
+      font-size:11px;
+      line-height:1.6;
+    ">
+      CRÉÉ ET DÉVELOPPÉ PAR <strong>WEBER MANDONGA</strong><br>
+      SUPERVISÉ PAR <strong>EPHRAIM AMANI</strong>
+    </div>
+
+  </div>
+</div>
+
+<!-- APPLICATION -->
+<div class="app">
+
+<aside class="sidebar">
+
+  <div class="brand">SchoolFlow</div>
+  
+
+
+  <div class="nav">
+
+    <button class="active" onclick="showPage('dashboard',this)">🏠 Tableau de bord</button>
+    <button onclick="showPage('students',this)">👨‍🎓 Élèves</button>
+    <button onclick="showPage('classes',this)">🎓 Classes</button>
+    <button onclick="showPage('payments',this)">💰 Paiements</button>
+    <button onclick="showPage('messages',this)">💬 Messages</button>
+    <button onclick="showPage('convocations',this)">📋 Convocations</button>
+    <button onclick="showPage('whatsapp',this)">📱 WhatsApp</button>
+    <button onclick="showPage('bot',this)">🤖 Agent School Flow</button>
+    <button onclick="showPage('settings',this)">⚙️ Paramètres</button>
+
+  </div>
+
+</aside>
+
+<main class="main">
+
+<div class="topbar">
+  <h1 id="pageTitle">Bienvenue dans SchoolFlow</h1>
+  <div class="status" id="waStatus">🟡 WhatsApp</div>
+</div>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="page active">
+
+<div id="sfSearchWrap" style="
+  position:relative;width:100%;box-sizing:border-box;
+  padding:0 18px;margin:14px 0 20px;z-index:50;">
+  <input id="sfStudentSearch" type="search"
+    placeholder="🔎 Rechercher un élève, une classe ou un matricule..."
+    autocomplete="off" aria-label="Rechercher dans School Flow"
+    style="display:block;width:100%;min-height:48px;box-sizing:border-box;
+      padding:13px 16px;border:1px solid #334155;border-radius:12px;
+      background:#0b1220;color:#fff;font-size:15px;outline:none;">
+  <div id="sfSearchResults" role="listbox"
+    style="display:none;position:absolute;top:calc(100% - 1px);
+      left:18px;right:18px;max-height:300px;overflow-y:auto;
+      background:#101827;border:1px solid #334155;border-radius:0 0 12px 12px;
+      box-shadow:0 12px 28px #0008;color:#fff;"></div>
+</div>
+
+<div class="card">
+  <h2 id="schoolTitle">Votre établissement</h2>
+  <p class="muted">
+    Gestion scolaire, communications et convocations depuis une seule interface.
+  </p>
+</div>
+
+<div class="stats">
+
+  <div class="stat">
+    👨‍🎓 Élèves
+    <strong id="studentCount">0</strong>
+  </div>
+
+  <div class="stat">
+    🎓 Classes
+    <strong id="classCount">0</strong>
+  </div>
+
+  <div class="stat">
+    📱 WhatsApp
+    <strong id="waStat">—</strong>
+  </div>
+
+  <div class="stat">
+    📡 Système
+    <strong>ONLINE</strong>
+  </div>
+
+</div>
+
+<div class="card">
+  <h2>Communication rapide</h2>
+  <p class="muted">
+    Envoyez rapidement un message officiel aux parents d'élèves.
+  </p>
+  <br>
+  <button class="btn" onclick="showPage('messages')">Créer un message</button>
+</div>
+
+</section>
+
+<!-- STUDENTS -->
+<section id="students" class="page">
+
+<div class="card">
+  <h2>Ajouter un élève</h2>
+
+  <div class="form">
+
+    <input id="studentName" placeholder="Nom complet de l'élève">
+    <input id="studentClass" placeholder="Classe">
+
+    <div class="grid2">
+      <input id="fatherName" placeholder="Nom du père">
+      <input id="fatherPhone" placeholder="Téléphone du père">
+    </div>
+
+    <div class="grid2">
+      <input id="motherName" placeholder="Nom de la mère">
+      <input id="motherPhone" placeholder="Téléphone de la mère">
+    </div>
+
+    <button id="btnAjouterEleveV2" class="btn" type="button" onclick="ajouterEleveManuellementV2()" style="background:#1769ff;color:white;font-weight:700;border:2px solid #8ab4ff;border-radius:12px;padding:14px 18px;box-shadow:0 4px 12px rgba(23,105,255,.25);">
+  <span aria-hidden="true">➕ 👨‍🎓</span> Ajouter un élève
+</button>
+
+  </div>
+</div>
+
+<div class="card">
+  <h2>Élèves enregistrés</h2>
+  <div id="studentsList"></div>
+</div>
+
+</section>
+
+<!-- CLASSES -->
+<section id="classes" class="page">
+
+<div class="card">
+  <h2>Classes</h2>
+  <div id="classesList"></div>
+</div>
+
+</section>
+
+
+<!-- PAIEMENTS -->
+<section id="payments" class="page">
+
+  <div class="card">
+    <h2>💰 Paiements des frais</h2>
+    <p class="muted">
+      Configurez les frais par classe et suivez les paiements de chaque élève.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Configuration des frais</h2>
+
+    <div class="form">
+
+      <div class="grid2">
+
+        <select id="paymentClass">
+          <option value="">Sélectionner une classe</option>
+        </select>
+
+        <input
+          id="paymentFeeAmount"
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="Montant des frais"
+        >
+
+      </div>
+
+      <div class="grid2">
+
+        <select id="paymentCurrency">
+          <option value="USD">USD ($)</option>
+          <option value="CDF">CDF (FC)</option>
+        </select>
+
+        <button
+          class="btn"
+          onclick="savePaymentClassFee()"
+        >
+          Enregistrer les frais
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card">
+
+    <h2>Élèves de la classe</h2>
+
+    <div class="form">
+
+      <select
+        id="paymentClassFilter"
+        onchange="loadPaymentOverview()"
+      >
+        <option value="">Sélectionner une classe</option>
+      </select>
+
+    </div>
+
+    <div
+      id="paymentClassInfo"
+      class="muted"
+      style="margin-top:12px"
+    >
+      Sélectionnez une classe pour afficher les élèves.
+    </div>
+
+    <div
+      id="paymentsStudentsList"
+      style="margin-top:18px"
+    ></div>
+
+  </div>
+
+  <div
+    id="paymentEntryCard"
+    class="card"
+    style="display:none"
+  >
+
+    <h2>Enregistrer un paiement</h2>
+
+    <div id="paymentStudentInfo"></div>
+
+    <div class="form">
+
+      <input
+        id="paymentAmount"
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="Montant du paiement"
+      >
+
+      <input
+        id="paymentCashReceived"
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="Argent remis par le parent"
+        oninput="calculatePaymentChange()"
+      >
+
+      <div
+        id="paymentChange"
+        class="muted"
+        style="font-size:15px"
+      >
+        Monnaie : 0
+      </div>
+
+      <button
+        class="btn"
+        onclick="submitPayment()"
+      >
+        ✓ Enregistrer le paiement
+      </button>
+
+    </div>
+
+  </div>
+
+  <div
+    id="paymentHistoryCard"
+    class="card"
+    style="display:none"
+  >
+
+    <h2>Historique des paiements</h2>
+
+    <div id="paymentHistory"></div>
+
+  </div>
+
+</section>
+
+<!-- MESSAGES -->
+<section id="messages" class="page">
+
+<div class="card">
+
+  <h2>Créer un message officiel</h2>
+
+  <div class="form">
+
+    <select id="messageType">
+      <option value="📢 COMMUNIQUÉ">📢 Communiqué</option>
+      <option value="✉️ CONVOCATION">✉️ Convocation</option>
+      <option value="💌 INVITATION">💌 Invitation</option>
+      <option value="🕊️ FAIRE-PART">🕊️ Faire-part</option>
+      <option value="📅 RÉUNION">📅 Réunion</option>
+      <option value="🔔 INFORMATION">🔔 Information</option>
+      <option value="⚠️ AVIS IMPORTANT">⚠️ Avis important</option>
+      <option value="🎓 INFORMATION SCOLAIRE">🎓 Information scolaire</option>
+      <option value="📝 RAPPEL">📝 Rappel</option>
+    </select>
+
+
+    <div class="card" style="margin:12px 0;padding:14px;">
+      <h3>👥 Destinataires du communiqué</h3>
+
+      <label style="display:flex;align-items:center;gap:10px;margin:12px 0;font-weight:bold;">
+        <input type="checkbox" id="messageAllSchool">
+        🏫 Sélectionner toute l'école
+      </label>
+
+      <label for="messageClassFilter">Sélectionner une classe</label>
+      <select id="messageClassFilter">
+        <option value="">Toutes les classes</option>
+      </select>
+
+      <button type="button" class="btn" id="messageAddClass" style="margin:8px 0;">
+        ☑ Ajouter toute cette classe
+      </button>
+
+      <label for="messageStudentSearch">Rechercher un élève</label>
+      <input
+        id="messageStudentSearch"
+        type="search"
+        placeholder="Nom de l'élève ou classe..."
+      >
+
+      <div id="messageStudentList"
+        style="max-height:300px;overflow-y:auto;margin-top:12px;">
+      </div>
+
+      <p id="messageSelectionCount" style="font-weight:bold;margin-top:12px;">
+        0 élève sélectionné
+      </p>
+
+      <button type="button" class="btn" id="messageClearSelection">
+        ✕ Tout désélectionner
+      </button>
+    </div>
+
+
+    <input id="messageDate" type="date">
+
+    <input id="messageTime" type="time">
+
+    <input id="messageReason" placeholder="Motif / objet du message">
+
+    <textarea id="messageBody" placeholder="Entrez votre message ici. School Flow le mettra en forme automatiquement..."></textarea>
+
+    <button class="btn" onclick="generateMessage()">
+      Générer le message officiel
+    </button>
+
+  </div>
+
+</div>
+
+<div class="card">
+
+  <h2>Aperçu</h2>
+
+  <textarea id="messagePreview" placeholder="Votre message mis en forme apparaîtra ici. Vous pourrez le corriger avant l’envoi."></textarea>
+
+  <br><br>
+
+  <button class="btn" onclick="sendSelectedMessage()">
+    📱 Envoyer aux parents
+  </button>
+
+</div>
+
+</section>
+
+<!-- CONVOCATIONS -->
+<section id="convocations" class="page">
+
+<div class="card">
+
+  <h2>Nouvelle convocation</h2>
+
+  <div class="form">
+
+    <select id="convStudent">
+      <option value="">Sélectionner un élève</option>
+    </select>
+<select id="convReason">
+  <option value="">Sélectionner le motif de la convocation</option>
+  <option value="Dérangement">Dérangement</option>
+  <option value="Impolitesse">Impolitesse</option>
+  <option value="Bagarre">Bagarre</option>
+  <option value="Vol">Vol</option>
+  <option value="Retard">Retard</option>
+  <option value="Absence injustifiée">Absence injustifiée</option>
+  <option value="Indiscipline">Indiscipline</option>
+  <option value="Non-respect du règlement scolaire">Non-respect du règlement scolaire</option>
+  <option value="Travail scolaire insuffisant">Travail scolaire insuffisant</option>
+  <option value="Autre">Autre</option>
+</select>
+
+    <button class="btn" onclick="createConvocation()">
+      Générer la convocation
+    </button>
+
+  </div>
+
+</div>
+
+<div class="card">
+  <h2>Prévisualisation</h2>
+  <textarea id="convPreview" readonly></textarea>
+
+  <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
+    <button
+      id="sendConvocationButton"
+      class="btn"
+      onclick="sendConvocation()">
+      ✓ Confirmer et envoyer aux parents
+    </button>
+  </div>
+
+  <div
+    id="convocationSendStatus"
+    class="muted"
+    style="margin-top:10px;">
+  </div>
+</div>
+
+</section>
+
+<!-- WHATSAPP -->
+
+<!-- AGENT SCHOOL FLOW -->
+<section id="bot" class="page">
+
+  <div class="card">
+    <h2>🤖 Agent School Flow</h2>
+
+    <p class="muted">
+      Configurez l’assistant automatique de votre établissement.
+      L’agent utilise uniquement les informations de cette école.
+    </p>
+
+    <div
+      id="botSchoolName"
+      style="
+        margin-top:14px;
+        padding:12px;
+        border-radius:10px;
+        background:rgba(255,255,255,.04);
+        font-weight:700;
+      "
+    >
+      🏫 Établissement : chargement...
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>⚙️ Activation</h3>
+
+    <label style="display:flex;align-items:center;gap:10px;margin-top:14px;">
+      <input
+        type="checkbox"
+        id="botEnabled"
+        style="width:20px;height:20px;"
+      >
+
+      <span>
+        <b>Activer l’agent automatique</b><br>
+        <small class="muted">
+          L’agent répondra automatiquement aux messages reçus.
+        </small>
+      </span>
+    </label>
+  </div>
+
+  <div class="card">
+
+    <h3>👤 Identité de l’agent</h3>
+
+    <label>Nom de l’assistant</label>
+
+    <input
+      id="botAssistantName"
+      type="text"
+      placeholder="Assistant School Flow"
+      style="width:100%;margin-top:8px;"
+    >
+
+    <label style="display:block;margin-top:16px;">
+      Message d’accueil
+    </label>
+
+    <textarea
+      id="botWelcomeMessage"
+      rows="4"
+      style="width:100%;margin-top:8px;"
+    ></textarea>
+
+    <label style="display:block;margin-top:16px;">
+      Réponse si l’agent ne connaît pas la demande
+    </label>
+
+    <textarea
+      id="botUnknownMessage"
+      rows="4"
+      style="width:100%;margin-top:8px;"
+    ></textarea>
+
+  </div>
+
+  <div class="card">
+
+    <h3>☎️ Assistance humaine</h3>
+
+    <label>Nom du contact</label>
+
+    <input
+      id="botHumanName"
+      type="text"
+      placeholder="Assistance de l’établissement"
+      style="width:100%;margin-top:8px;"
+    >
+
+    <label style="display:block;margin-top:16px;">
+      Numéro de téléphone
+    </label>
+
+    <input
+      id="botHumanPhone"
+      type="text"
+      placeholder="+243..."
+      style="width:100%;margin-top:8px;"
+    >
+
+  </div>
+
+  <div class="card">
+
+    <h3>📚 Connaissances de l’établissement</h3>
+
+    <p class="muted">
+      Ajoutez les questions et réponses que l’agent doit connaître.
+    </p>
+
+    <div id="botKnowledgeList"></div>
+
+    <button
+      class="btn"
+      type="button"
+      onclick="addBotKnowledge()"
+    >
+      ＋ Ajouter une connaissance
+    </button>
+
+  </div>
+
+  <div class="card">
+
+    <button
+      class="btn"
+      type="button"
+      onclick="saveBotConfig()"
+    >
+      💾 Enregistrer la configuration
+    </button>
+
+    <div
+      id="botSaveStatus"
+      class="muted"
+      style="margin-top:12px;"
+    ></div>
+
+  </div>
+
+</section>
+
+<section id="whatsapp" class="page">
+
+<div id="schoolFlowMultiSessionsPanel" class="card" style="margin-top:18px">
+  <h2>📱 Sessions WhatsApp indépendantes</h2>
+  <p>Chaque session appartient à l’établissement actuellement connecté.</p>
+  <p>Créer une session ne connecte pas automatiquement WhatsApp.</p>
+
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:end">
+    <label style="flex:1;min-width:130px">
+      Identifiant de session
+      <input id="sfMultiSessionId" type="text" maxlength="40"
+        placeholder="ex. bureau2" autocomplete="off">
+    </label>
+    <label style="flex:1;min-width:170px">
+      Numéro WhatsApp
+      <input id="sfMultiSessionPhone" type="tel"
+        placeholder="243XXXXXXXXX" autocomplete="off">
+    </label>
+    <button type="button" id="sfMultiSessionCreate">Créer la session</button>
+    <button type="button" id="sfMultiSessionRefresh">Actualiser</button>
+  </div>
+
+  <p id="sfMultiSessionMessage" role="status" aria-live="polite"></p>
+  <div id="sfMultiSessionList"></div>
+</div>
+<div class="card">
+
+  <h2>📱 Connexion WhatsApp</h2>
+
+  <p class="muted">
+    Connectez le numéro WhatsApp de votre établissement pour envoyer
+    les communications aux parents.
+  </p>
+
+  <div id="waConnectionInfo"
+       style="margin:18px 0;padding:15px;border:1px solid rgba(255,255,255,.12);border-radius:12px;">
+    <strong id="waConnectionTitle">🔴 WhatsApp déconnecté</strong>
+    <div id="waPhone"
+         style="margin-top:7px;opacity:.8;">
+      Aucun numéro connecté
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+    <button class="btn" onclick="connectWhatsApp()">
+      🔳 Connecter par QR
+    </button>
+
+    <button class="btn" onclick="showPairingCodeForm()">
+      🔐 Code d'appairage
+    </button>
+
+  </div>
+
+  <div id="pairingArea"
+       style="display:none;margin-top:18px;padding:16px;border:1px solid rgba(255,255,255,.12);border-radius:12px;">
+
+    <strong>🔐 Connexion par code d'appairage</strong>
+
+    <p class="muted" style="margin-top:8px;">
+      Entrez le numéro WhatsApp avec son indicatif pays.
+      Exemple : 243XXXXXXXXX
+    </p>
+
+    <input
+      id="pairingPhone"
+      type="tel"
+      inputmode="numeric"
+      placeholder="243XXXXXXXXX"
+      style="width:100%;margin:12px 0;padding:12px;border-radius:9px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.25);color:inherit;"
+    >
+
+    <button class="btn" onclick="requestWhatsAppPairingCode()">
+      Générer le code
+    </button>
+
+    <div id="pairingCodeResult"
+         style="display:none;margin-top:15px;text-align:center;">
+      <div class="muted">Votre code d'appairage :</div>
+      <div id="pairingCode"
+           style="font-size:25px;font-weight:800;letter-spacing:4px;margin-top:8px;">
+      </div>
+      <div class="muted" style="margin-top:8px;">
+        Entrez ce code dans WhatsApp → Appareils connectés → Connecter un appareil.
+      </div>
+    </div>
+
+  </div>
+
+  <div id="qrArea"
+       style="display:none;margin-top:20px;text-align:center;padding:18px;border:1px solid rgba(255,255,255,.12);border-radius:12px;">
+
+    <strong>📱 Scanner le QR Code avec WhatsApp</strong>
+
+    <div id="qrImageArea" style="margin-top:15px;"></div>
+
+    <div class="muted" style="margin-top:10px;">
+      Ouvrez WhatsApp → Appareils connectés → Connecter un appareil.
+    </div>
+
+  </div>
+
+  <div id="waActions"
+       style="display:none;margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);">
+
+    <strong>Gestion de la connexion</strong>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+
+      <button class="btn" onclick="disconnectWhatsApp()">
+        🔴 Déconnecter
+      </button>
+
+      <button class="btn" onclick="connectNewWhatsApp()">
+        🔄 Connecter un nouveau numéro
+      </button>
+
+      <button class="btn" onclick="deleteWhatsAppConnection()">
+        🗑️ Supprimer la session
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="page">
+<!-- =========================================================
+     SCHOOL FLOW - GROUPES & COMMUNICATION
+     ========================================================= -->
+
+<div id="schoolFlowGroupsPanel" style="
+  margin-top:24px;
+  padding:20px;
+  border-radius:18px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.10);
+">
+
+  <div style="margin-bottom:18px;">
+    <div style="
+      font-size:18px;
+      font-weight:800;
+      color:#fff;
+      margin-bottom:6px;
+    ">
+      🔗 Groupes & communication
+    </div>
+
+    <div style="
+      font-size:13px;
+      line-height:1.5;
+      opacity:.72;
+    ">
+      Configurez les liens officiels de communication de votre établissement.
+      Le bot pourra ensuite retrouver automatiquement le groupe demandé.
+    </div>
+  </div>
+
+  <div id="schoolFlowGroupsList"></div>
+
+  <button
+    type="button"
+    class="btn"
+    onclick="saveSchoolFlowGroups()"
+    style="margin-top:18px;width:100%;"
+  >
+    💾 Enregistrer les groupes
+  </button>
+
+  <div
+    id="schoolFlowGroupsStatus"
+    style="
+      margin-top:12px;
+      font-size:13px;
+      opacity:.8;
+    "
+  ></div>
+
+</div>
+
+<script>
+const SCHOOL_FLOW_GROUP_TYPES = {
+  establishment: "🏫 Groupe officiel de l'établissement",
+  parents: "👨‍👩‍👧 Groupe Parents",
+  teachers: "👨‍🏫 Groupe Professeurs",
+  parents_teachers: "👨‍👩‍👧‍👦 Groupe Parents-Professeurs",
+  channel: "📢 Canal d'information"
+};
+
+async function loadSchoolFlowGroups() {
+  const container = document.getElementById('schoolFlowGroupsList');
+
+  if (!container) return;
+
+  try {
+    const response = await fetch('/api/school/groups');
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.message || 'Erreur');
+    }
+
+    container.innerHTML = '';
+
+    for (const type of Object.keys(SCHOOL_FLOW_GROUP_TYPES)) {
+      const group = data.groups?.[type] || {};
+
+      const row = document.createElement('div');
+
+      row.style.cssText = [
+        'padding:15px',
+        'margin-bottom:12px',
+        'border-radius:14px',
+        'background:rgba(0,0,0,.18)',
+        'border:1px solid rgba(255,255,255,.07)'
+      ].join(';');
+
+      row.innerHTML = `
+        <div style="
+          font-weight:700;
+          margin-bottom:10px;
+        ">
+          ${SCHOOL_FLOW_GROUP_TYPES[type]}
+        </div>
+
+        <label style="
+          display:flex;
+          align-items:center;
+          gap:8px;
+          margin-bottom:10px;
+          font-size:13px;
+        ">
+          <input
+            type="checkbox"
+            data-group-enabled="${type}"
+            ${group.enabled ? 'checked' : ''}
+          >
+          Activer ce groupe
+        </label>
+
+        <input
+          type="url"
+          data-group-link="${type}"
+          value="${escapeSchoolFlowGroupHtml(group.link || '')}"
+          placeholder="https://chat.whatsapp.com/..."
+          style="
+            width:100%;
+            box-sizing:border-box;
+          "
+        >
+      `;
+
+      container.appendChild(row);
+    }
+
+  } catch (error) {
+    console.error('SchoolFlow groups:', error);
+
+    container.innerHTML = `
+      <div style="opacity:.7;">
+        Impossible de charger les groupes.
+      </div>
+    `;
+  }
+}
+
+function escapeSchoolFlowGroupHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+async function saveSchoolFlowGroups() {
+  const status = document.getElementById('schoolFlowGroupsStatus');
+
+  const groups = {};
+
+  for (const type of Object.keys(SCHOOL_FLOW_GROUP_TYPES)) {
+    const checkbox =
+      document.querySelector('[data-group-enabled="' + type + '"]');
+
+    const input =
+      document.querySelector('[data-group-link="' + type + '"]');
+
+    groups[type] = {
+      enabled: checkbox ? checkbox.checked : false,
+      link: input ? input.value.trim() : ''
+    };
+  }
+
+  if (status) {
+    status.textContent = '⏳ Enregistrement...';
+  }
+
+  try {
+    const response = await fetch('/api/school/groups', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(groups)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || 'Erreur');
+    }
+
+    if (status) {
+      status.textContent =
+        '✅ Configuration des groupes enregistrée.';
+    }
+
+    await loadSchoolFlowGroups();
+
+  } catch (error) {
+    console.error('SchoolFlow save groups:', error);
+
+    if (status) {
+      status.textContent =
+        '❌ Impossible d’enregistrer les groupes.';
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadSchoolFlowGroups();
+});
+</script>
+
+<!-- =========================================================
+     FIN GROUPES & COMMUNICATION
+     ========================================================= -->
+
+
+<div class="card">
+
+  <h2>Paramètres de l'établissement</h2>
+
+  <div class="form">
+
+    <input id="schoolInput" placeholder="Nom de l'établissement" autocomplete="organization" autocapitalize="words">
+
+    <button class="btn" onclick="saveSchool()">
+      Enregistrer
+    </button>
+
+  </div>
+
+</div>
+
+<div class="card" id="studentRegistrationQR">
+
+  <h2>📱 Inscription des élèves par QR Code</h2>
+
+  <p class="muted">
+    Les élèves peuvent scanner ce QR Code avec leur téléphone
+    pour remplir directement leur fiche d'inscription.
+  </p>
+
+  <br>
+
+  <button class="btn" onclick="generateStudentRegistrationQR()">
+    Générer mon QR Code
+  </button>
+
+  <div id="studentQRResult" style="display:none;text-align:center;margin-top:25px;">
+
+    <img
+      id="studentQRImage"
+      alt="QR Code d'inscription"
+      style="
+        width:260px;
+        max-width:100%;
+        background:white;
+        padding:12px;
+        border-radius:16px;
+      "
+    >
+
+    <p
+      id="studentRegistrationUrl"
+      class="muted"
+      style="
+        margin-top:18px;
+        word-break:break-all;
+        font-size:12px;
+      "
+    ></p>
+
+    <button
+      class="btn"
+      onclick="copyStudentRegistrationLink()"
+      style="margin-top:10px;"
+    >
+      Copier le lien d'inscription
+    </button>
+
+  </div>
+
+  <div
+    id="studentQRMessage"
+    class="muted"
+    style="margin-top:15px;"
+  ></div>
+
+</div>
+
+
+<div class="card">
+
+  <h2>À propos d'SchoolFlow</h2>
+
+  <p class="muted">
+    SchoolFlow est une solution de gestion et de communication scolaire.
+  </p>
+
+  <br>
+
+  <p class="muted">
+    Créé par Weber Mandonga<br>
+    Supervisé par Ephraim Amani
+  </p>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+
+
+<!-- =========================================================
+     SCHOOL FLOW - PARAMÈTRES DU BOT
+     ========================================================= -->
+
+<div
+  id="schoolFlowBotSettingsPanel"
+  class="card"
+  style="
+    margin-top:24px;
+    padding:20px;
+  "
+>
+
+  <h2>🤖 Paramètres du bot</h2>
+
+  <p class="muted">
+    Configurez le comportement du bot SCHOOL FLOW avant son passage
+    en utilisation officielle.
+  </p>
+
+  <br>
+
+  <div
+    style="
+      padding:15px;
+      border-radius:14px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+    "
+  >
+
+    <strong>🚀 Mode de fonctionnement</strong>
+
+    <p
+      id="schoolFlowBotModeStatus"
+      class="muted"
+      style="margin-top:8px;"
+    >
+      Chargement...
+    </p>
+
+    <select
+      id="schoolFlowBotMode"
+      style="
+        width:100%;
+        box-sizing:border-box;
+        margin-top:8px;
+      "
+    >
+      <option value="test">🧪 TEST</option>
+      <option value="official">🚀 OFFICIEL</option>
+    </select>
+
+  </div>
+
+  <br>
+
+  <div
+    style="
+      padding:15px;
+      border-radius:14px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+    "
+  >
+
+    <strong>🧠 Base de connaissances</strong>
+
+    <p
+      id="schoolFlowKnowledgeStatus"
+      class="muted"
+      style="margin-top:8px;"
+    >
+      Vérification...
+    </p>
+
+    <button
+      type="button"
+      class="btn"
+      onclick="testSchoolFlowBotKnowledge()"
+      style="width:100%;margin-top:10px;"
+    >
+      🧪 Tester une question
+    </button>
+
+    <div
+      id="schoolFlowKnowledgeTestResult"
+      class="muted"
+      style="
+        margin-top:12px;
+        white-space:pre-wrap;
+      "
+    ></div>
+
+  </div>
+
+  <br>
+
+  <div
+    style="
+      padding:15px;
+      border-radius:14px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+    "
+  >
+
+    <strong>💬 Réponses automatiques</strong>
+
+    <label
+      style="
+        display:flex;
+        align-items:center;
+        gap:8px;
+        margin-top:12px;
+      "
+    >
+      <input
+        type="checkbox"
+        id="schoolFlowBotAutoReplies"
+        checked
+      >
+      Activer les réponses automatiques
+    </label>
+
+    <label
+      style="
+        display:flex;
+        align-items:center;
+        gap:8px;
+        margin-top:10px;
+      "
+    >
+      <input
+        type="checkbox"
+        id="schoolFlowBotUnknownReply"
+        checked
+      >
+      Répondre aux questions non reconnues
+    </label>
+
+  </div>
+
+  <br>
+
+  <div
+    style="
+      padding:15px;
+      border-radius:14px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+    "
+  >
+
+    <strong>📞 Assistance SCHOOL FLOW</strong>
+
+    <p class="muted" style="margin-top:8px;">
+      Contact officiel :
+      <strong>+243 856 868 015</strong>
+    </p>
+
+    <a
+      href="https://wa.me/243856868015"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="btn"
+      style="
+        display:block;
+        text-align:center;
+        text-decoration:none;
+        margin-top:10px;
+      "
+    >
+      💬 Contacter SCHOOL FLOW
+    </a>
+
+  </div>
+
+  <button
+    type="button"
+    class="btn"
+    onclick="saveSchoolFlowBotSettings()"
+    style="
+      width:100%;
+      margin-top:18px;
+    "
+  >
+    💾 Enregistrer les paramètres du bot
+  </button>
+
+  <div
+    id="schoolFlowBotSettingsStatus"
+    class="muted"
+    style="margin-top:12px;"
+  ></div>
+
+</div>
+
+<script>
+async function loadSchoolFlowBotSettings() {
+  const mode = document.getElementById('schoolFlowBotMode');
+  const status = document.getElementById('schoolFlowBotModeStatus');
+  const knowledge = document.getElementById('schoolFlowKnowledgeStatus');
+
+  if (!mode) return;
+
+  try {
+    const response = await fetch('/api/bot/settings');
+    const data = await response.json();
+
+    if (data.success && data.settings) {
+      mode.value = data.settings.mode || 'test';
+
+      document.getElementById('schoolFlowBotAutoReplies').checked =
+        data.settings.autoReplies !== false;
+
+      document.getElementById('schoolFlowBotUnknownReply').checked =
+        data.settings.replyUnknown !== false;
+    }
+
+  } catch (error) {
+    console.warn(
+      'SCHOOL FLOW — paramètres bot non disponibles :',
+      error
+    );
+  }
+
+  if (status) {
+    status.textContent =
+      mode.value === 'official'
+        ? '🚀 Mode OFFICIEL activé.'
+        : '🧪 Mode TEST activé.';
+  }
+
+  if (knowledge) {
+    knowledge.textContent =
+      '🧠 Base locale étendue disponible — plus de 3 500 connaissances.';
+  }
+}
+
+async function saveSchoolFlowBotSettings() {
+  const status =
+    document.getElementById('schoolFlowBotSettingsStatus');
+
+  const mode =
+    document.getElementById('schoolFlowBotMode')?.value || 'test';
+
+  const autoReplies =
+    document.getElementById('schoolFlowBotAutoReplies')?.checked !== false;
+
+  const replyUnknown =
+    document.getElementById('schoolFlowBotUnknownReply')?.checked !== false;
+
+  if (status) {
+    status.textContent = '⏳ Enregistrement...';
+  }
+
+  try {
+    const response = await fetch('/api/bot/settings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        mode,
+        autoReplies,
+        replyUnknown
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data.message || 'Impossible d’enregistrer les paramètres.'
+      );
+    }
+
+    if (status) {
+      status.textContent =
+        '✅ Paramètres du bot enregistrés.';
+    }
+
+    const modeStatus =
+      document.getElementById('schoolFlowBotModeStatus');
+
+    if (modeStatus) {
+      modeStatus.textContent =
+        mode === 'official'
+          ? '🚀 Mode OFFICIEL activé.'
+          : '🧪 Mode TEST activé.';
+    }
+
+  } catch (error) {
+    console.error(
+      'SCHOOL FLOW — sauvegarde paramètres bot :',
+      error
+    );
+
+    if (status) {
+      status.textContent =
+        '❌ Le serveur ne possède pas encore cette configuration.';
+    }
+  }
+}
+
+async function testSchoolFlowBotKnowledge() {
+  const result =
+    document.getElementById('schoolFlowKnowledgeTestResult');
+
+  if (!result) return;
+
+  const question =
+    window.prompt(
+      'Écrivez une question à tester avec la base locale SCHOOL FLOW :'
+    );
+
+  if (!question || !question.trim()) return;
+
+  result.textContent = '⏳ Test en cours...';
+
+  try {
+    const response = await fetch('/api/bot/test-knowledge', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        question: question.trim()
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data.message || 'Test impossible.'
+      );
+    }
+
+    result.textContent =
+      '✅ Question : ' +
+      question.trim() +
+      '\n\n' +
+      '🤖 Réponse :\n' +
+      String(data.answer || 'Aucune réponse locale.');
+      
+  } catch (error) {
+    console.error(
+      'SCHOOL FLOW — test knowledge :',
+      error
+    );
+
+    result.textContent =
+      '⚠️ Le test de connaissance sera disponible après branchement de la route serveur.';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadSchoolFlowBotSettings();
+});
+</script>
+
+<!-- =========================================================
+     FIN PARAMÈTRES DU BOT
+     ========================================================= -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+let students=[];
+let classes=[];
+let selectedStudent=null;
+let currentSchool="";
+function styleSchoolMessage99(text){
+  const map = {
+    A:'𝗔',B:'𝗕',C:'𝗖',D:'𝗗',E:'𝗘',F:'𝗙',G:'𝗚',H:'𝗛',
+    I:'𝗜',J:'𝗝',K:'𝗞',L:'𝗟',M:'𝗠',N:'𝗡',O:'𝗢',P:'𝗣',
+    Q:'𝗤',R:'𝗥',S:'𝗦',T:'𝗧',U:'𝗨',V:'𝗩',W:'𝗪',X:'𝗫',
+    Y:'𝗬',Z:'𝗭',
+    a:'𝗮',b:'𝗯',c:'𝗰',d:'𝗱',e:'𝗲',f:'𝗳',g:'𝗴',h:'𝗵',
+    i:'𝗶',j:'𝗷',k:'𝗸',l:'𝗹',m:'𝗺',n:'𝗻',o:'𝗼',p:'𝗽',
+    q:'𝗾',r:'𝗿',s:'𝘀',t:'𝘁',u:'𝘂',v:'𝘃',w:'𝘄',x:'𝘅',
+    y:'𝘆',z:'𝘇',
+    À:'𝗔',Â:'𝗔',Ä:'𝗔',Ç:'𝗖',É:'𝗘',È:'𝗘',Ê:'𝗘',Ë:'𝗘',
+    Î:'𝗜',Ï:'𝗜',Ô:'𝗢',Ö:'𝗢',Ù:'𝗨',Û:'𝗨',Ü:'𝗨',
+    à:'𝗮',â:'𝗮',ä:'𝗮',ç:'𝗰',é:'𝗲',è:'𝗲',ê:'𝗲',ë:'𝗲',
+    î:'𝗶',ï:'𝗶',ô:'𝗼',ö:'𝗼',ù:'𝘂',û:'𝘂',ü:'𝘂'
+  };
+
+  return String(text || '')
+    .split('')
+    .map(c => map[c] || c)
+    .join('');
+}
+
+function refreshSchoolNameEverywhere(name){
+  const schoolName = String(name || '').trim();
+
+  currentSchool = schoolName;
+
+  try {
+    localStorage.setItem('edusync_school_name', schoolName);
+  } catch(e) {}
+
+  const input = document.getElementById('schoolInput');
+  if(input) input.value = schoolName;
+
+  const title = document.getElementById('schoolTitle');
+  if(title) title.textContent = schoolName;
+
+  document.querySelectorAll('[data-school-name]').forEach(el => {
+    el.textContent = schoolName;
+  });
+
+  document.querySelectorAll('.school-name').forEach(el => {
+    el.textContent = schoolName;
+  });
+}
+
+
+
+function getSchoolName(){
+  return String(currentSchool || "").trim();
+}
+
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;
+  t.style.display="block";
+  setTimeout(()=>t.style.display="none",3000);
+}
+
+
+async function generateStudentRegistrationQR(){
+  const message = document.getElementById("studentQRMessage");
+  const result = document.getElementById("studentQRResult");
+
+  message.textContent = "Génération du QR Code...";
+  result.style.display = "none";
+
+  try {
+    const response = await fetch("/api/student-registration/qr");
+    const data = await response.json();
+
+    if(!response.ok || !data.success){
+      throw new Error(data.message || "Impossible de générer le QR Code.");
+    }
+
+    document.getElementById("studentQRImage").src = data.qr;
+    document.getElementById("studentRegistrationUrl").textContent =
+      data.registrationUrl;
+
+    result.style.display = "block";
+    message.textContent =
+      "QR Code prêt pour " + data.schoolName + ".";
+
+  } catch(error) {
+    console.error(error);
+    message.textContent = error.message;
+  }
+}
+
+function copyStudentRegistrationLink(){
+  const url = document.getElementById("studentRegistrationUrl").textContent;
+
+  if(!url) return;
+
+  navigator.clipboard.writeText(url)
+    .then(() => {
+      if(typeof toast === "function"){
+        toast("Lien d'inscription copié.");
+      }
+    })
+    .catch(() => {
+      alert("Impossible de copier automatiquement le lien.");
+    });
+}
+
+
+
+/* ============================================================
+   SCHOOL FLOW — INTERFACE PAIEMENTS
+   ============================================================ */
+
+let paymentStudents = [];
+let paymentSelectedStudent = null;
+let paymentClassFees = {};
+
+
+
+
+async function ensurePaymentAccess() {
+
+  const existing =
+    sessionStorage.getItem(
+      'schoolFlowPaymentToken'
+    );
+
+  if (existing) {
+    try {
+      const checkResponse =
+        await fetch(
+          '/api/payments/settings',
+          {
+            method: 'GET',
+            headers: {
+              'X-School-Flow-Payment-Token':
+                existing
+            }
+          }
+        );
+
+      if (checkResponse.ok) {
+        const checkData =
+          await checkResponse.json();
+
+        if (
+          checkData &&
+          checkData.success
+        ) {
+          return true;
+        }
+      }
+    } catch (error) {
+      console.error(
+        'PAYMENT TOKEN CHECK ERROR:',
+        error
+      );
+    }
+
+    sessionStorage.removeItem(
+      'schoolFlowPaymentToken'
+    );
+  }
+
+  const pin =
+    window.prompt(
+      'SCHOOL FLOW\\n\\n' +
+      'ZONE FINANCIÈRE SÉCURISÉE\\n\\n' +
+      'Entrez votre code PIN financier à 4 chiffres :'
+    );
+
+  if (pin === null) {
+    return false;
+  }
+
+  const clean =
+    String(pin).trim();
+
+  if (!/^[0-9]{4}$/.test(clean)) {
+    alert(
+      'Veuillez saisir exactement 4 chiffres.'
+    );
+    return false;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        '/api/payments/access',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type':
+              'application/json'
+          },
+          body:
+            JSON.stringify({
+              pin: clean
+            })
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (
+      response.ok &&
+      data &&
+      data.success === true &&
+      data.token
+    ) {
+      sessionStorage.setItem(
+        'schoolFlowPaymentToken',
+        data.token
+      );
+
+      return true;
+    }
+
+    sessionStorage.removeItem(
+      'schoolFlowPaymentToken'
+    );
+
+    alert(
+      data?.message ||
+      'Accès financier refusé.'
+    );
+
+    return false;
+
+  } catch (error) {
+
+    console.error(
+      'PAYMENT ACCESS ERROR:',
+      error
+    );
+
+    sessionStorage.removeItem(
+      'schoolFlowPaymentToken'
+    );
+
+    alert(
+      'Impossible de vérifier l’accès financier.'
+    );
+
+    return false;
+  }
+}
+
+async function paymentApi(
+  url,
+  options = {}
+) {
+
+  const token =
+    sessionStorage.getItem(
+      'schoolFlowPaymentToken'
+    );
+
+  const headers = {
+    'Content-Type':
+      'application/json',
+    ...(options.headers || {})
+  };
+
+  if (token) {
+    headers[
+      'X-School-Flow-Payment-Token'
+    ] = token;
+  }
+
+  const response =
+    await fetch(
+      url,
+      {
+        ...options,
+        headers
+      }
+    );
+
+  return await response.json();
+}
+
+async function loadPaymentSettings(){
+
+  const data = await paymentApi('/api/payments/settings');
+
+  if(!data || !data.success){
+    console.error('Impossible de charger les paramètres des frais.');
+    return;
+  }
+
+  window.paymentSettings = { classFees: data.classFees || {} };
+
+  await loadPaymentClasses();
+}
+
+
+async function loadPaymentClasses(){
+
+  const selects = [
+    document.getElementById('paymentClass'),
+    document.getElementById('paymentClassFilter')
+  ];
+
+  const data = await api('/api/classes');
+
+  if(!data || !data.success){
+    selects.forEach(select => {
+      if(select){
+        select.innerHTML =
+          '<option value="">Aucune classe disponible</option>';
+      }
+    });
+    return;
+  }
+
+  const classes = Array.isArray(data.classes)
+    ? data.classes
+    : [];
+
+  selects.forEach(select => {
+
+    if(!select) return;
+
+    select.innerHTML =
+      '<option value="">Choisir une classe</option>';
+
+    classes.forEach(item => {
+
+      const className =
+        typeof item === 'string'
+          ? item
+          : String(
+              item.className ||
+              item.name ||
+              ''
+            ).trim();
+
+      if(!className) return;
+
+      const option =
+        document.createElement('option');
+
+      option.value = className;
+      option.textContent = className;
+
+      select.appendChild(option);
+    });
+  });
+
+  const paymentClass =
+    document.getElementById('paymentClass');
+
+  if(paymentClass){
+
+    paymentClass.onchange = function(){
+
+      const className =
+        String(this.value || '').trim();
+
+      const feeInput =
+        document.getElementById('paymentFeeAmount');
+
+      if(!feeInput) return;
+
+      feeInput.value = '';
+
+      const fees =
+        window.paymentSettings?.classFees || {};
+
+      if(
+        className &&
+        fees[className]
+      ){
+        feeInput.value =
+          fees[className].amount || '';
+      }
+    };
+  }
+
+  const paymentFilter =
+    document.getElementById('paymentClassFilter');
+
+  if(paymentFilter){
+
+    paymentFilter.onchange = function(){
+
+      loadPaymentOverview();
+    };
+  }
+}
+
+
+async function savePaymentClassFee() {
+
+  const className =
+    String(
+      document.getElementById('paymentClass')?.value || ''
+    ).trim();
+
+  const amount =
+    Number(
+      document.getElementById('paymentFeeAmount')?.value || 0
+    );
+
+  const currency =
+    document.getElementById('paymentCurrency')?.value ||
+    'USD';
+
+  if (!className) {
+    toast('Sélectionnez une classe.');
+    return;
+  }
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    toast('Entrez un montant valide.');
+    return;
+  }
+
+  const data =
+    await paymentApi('/api/payments/settings', {
+      method: 'POST',
+      body: JSON.stringify({
+        className,
+        amount,
+        currency
+      })
+    });
+
+  if (!data || !data.success) {
+    toast(
+      data?.message ||
+      'Impossible d’enregistrer les frais.'
+    );
+    return;
+  }
+
+  paymentClassFees[className] = {
+    amount,
+    currency
+  };
+
+  toast(
+    '✓ Frais de la classe enregistrés.'
+  );
+
+  const filter =
+    document.getElementById(
+      'paymentClassFilter'
+    );
+
+  if (filter) {
+    filter.value = className;
+    await loadPaymentOverview();
+  }
+}
+
+async function loadPaymentOverview() {
+
+  const className =
+    String(
+      document.getElementById(
+        'paymentClassFilter'
+      )?.value || ''
+    ).trim();
+
+  const list =
+    document.getElementById(
+      'paymentsStudentsList'
+    );
+
+  const info =
+    document.getElementById(
+      'paymentClassInfo'
+    );
+
+  if (!className) {
+
+    if (list) list.innerHTML = '';
+
+    if (info) {
+      info.textContent =
+        'Sélectionnez une classe pour afficher les élèves.';
+    }
+
+    return;
+  }
+
+  if (list) {
+    list.innerHTML =
+      '<p class="muted">Chargement des paiements...</p>';
+  }
+
+  const data =
+    await paymentApi(
+      '/api/payments/overview?className=' +
+      encodeURIComponent(className)
+    );
+
+  if (!data || !data.success) {
+
+    if (list) {
+      list.innerHTML =
+        '<p class="muted">Impossible de charger les paiements.</p>';
+    }
+
+    return;
+  }
+
+  paymentStudents =
+    Array.isArray(data.students)
+      ? data.students
+      : [];
+
+  if (info) {
+
+    if (!data.configured) {
+
+      info.innerHTML =
+        '⚠️ Les frais de cette classe ne sont pas encore configurés.';
+
+    } else {
+
+      info.innerHTML =
+        '<strong>Frais de la classe :</strong> ' +
+        data.feeAmount +
+        ' ' +
+        data.currency;
+
+    }
+  }
+
+  renderPaymentStudents(
+    data
+  );
+}
+
+function renderPaymentStudents(data) {
+
+  const list =
+    document.getElementById(
+      'paymentsStudentsList'
+    );
+
+  if (!list) return;
+
+  if (!data.configured) {
+
+    list.innerHTML =
+      '<p class="muted">Configurez d’abord les frais de cette classe.</p>';
+
+    return;
+  }
+
+  if (!paymentStudents.length) {
+
+    list.innerHTML =
+      '<p class="muted">Aucun élève dans cette classe.</p>';
+
+    return;
+  }
+
+  list.innerHTML =
+    paymentStudents.map(student => {
+
+      const status =
+        student.status === 'paye'
+          ? 'PAIEMENT COMPLET'
+          : student.status === 'partiel'
+            ? 'PAIEMENT PARTIEL'
+            : 'NON PAYÉ';
+
+      return `
+        <div
+          class="card"
+          style="margin-bottom:12px"
+        >
+
+          <div
+            style="
+              display:flex;
+              justify-content:space-between;
+              gap:15px;
+              align-items:center;
+              flex-wrap:wrap;
+            "
+          >
+
+            <div>
+
+              <strong style="font-size:16px">
+                👨‍🎓 ${escapeHtml(student.studentName)}
+              </strong>
+
+              <div class="muted">
+                Frais :
+                <strong>
+                  ${student.feeAmount} ${data.currency}
+                </strong>
+              </div>
+
+              <div class="muted">
+                Déjà payé :
+                <strong>
+                  ${student.totalPaid} ${data.currency}
+                </strong>
+              </div>
+
+              <div class="muted">
+                Reste :
+                <strong>
+                  ${student.remaining} ${data.currency}
+                </strong>
+              </div>
+
+            </div>
+
+            <div
+              style="
+                text-align:right;
+                min-width:150px;
+              "
+            >
+
+              <div
+                style="
+                  font-weight:700;
+                  margin-bottom:8px;
+                "
+              >
+                ${status}
+              </div>
+
+              <button
+                class="btn"
+                onclick="openPaymentStudent('${student.studentId}')"
+              >
+                Gérer le paiement
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join('');
+}
+
+async function openPaymentStudent(studentId) {
+
+  const data =
+    await paymentApi(
+      '/api/payments/student/' +
+      encodeURIComponent(studentId)
+    );
+
+  if (!data || !data.success) {
+
+    toast(
+      data?.message ||
+      'Impossible de charger cet élève.'
+    );
+
+    return;
+  }
+
+  paymentSelectedStudent =
+    data.student;
+
+  const card =
+    document.getElementById(
+      'paymentEntryCard'
+    );
+
+  const info =
+    document.getElementById(
+      'paymentStudentInfo'
+    );
+
+  if (card) {
+    card.style.display = 'block';
+  }
+
+  if (info) {
+
+    info.innerHTML = `
+      <div
+        style="
+          padding:15px;
+          margin-bottom:15px;
+          border-radius:12px;
+          background:rgba(255,255,255,.04);
+        "
+      >
+
+        <strong>
+          👨‍🎓 ${escapeHtml(data.student.name)}
+        </strong>
+
+        <div class="muted">
+          Classe : ${escapeHtml(data.student.className)}
+        </div>
+
+        <div class="muted">
+          Frais :
+          ${data.feeAmount}
+          ${data.currency}
+        </div>
+
+        <div class="muted">
+          Déjà payé :
+          ${data.summary.totalPaid}
+          ${data.currency}
+        </div>
+
+        <div class="muted">
+          Solde restant :
+          <strong>
+            ${data.summary.remaining}
+            ${data.currency}
+          </strong>
+        </div>
+
+      </div>
+    `;
+
+  }
+
+  const amount =
+    document.getElementById(
+      'paymentAmount'
+    );
+
+  const cash =
+    document.getElementById(
+      'paymentCashReceived'
+    );
+
+  if (amount) {
+    amount.value = '';
+    amount.max =
+      data.summary.remaining;
+  }
+
+  if (cash) {
+    cash.value = '';
+  }
+
+  calculatePaymentChange();
+
+  renderPaymentHistory(
+    data.history,
+    data.currency
+  );
+
+  const historyCard =
+    document.getElementById(
+      'paymentHistoryCard'
+    );
+
+  if (historyCard) {
+    historyCard.style.display = 'block';
+  }
+
+  card?.scrollIntoView({
+    behavior:'smooth',
+    block:'start'
+  });
+}
+
+function calculatePaymentChange() {
+
+  const amount =
+    Number(
+      document.getElementById(
+        'paymentAmount'
+      )?.value || 0
+    );
+
+  const cash =
+    Number(
+      document.getElementById(
+        'paymentCashReceived'
+      )?.value || 0
+    );
+
+  const change =
+    Math.max(
+      0,
+      Math.round(
+        (cash - amount) * 100
+      ) / 100
+    );
+
+  const box =
+    document.getElementById(
+      'paymentChange'
+    );
+
+  if (box) {
+
+    box.textContent =
+      'Monnaie : ' +
+      change;
+
+  }
+}
+
+async function submitPayment() {
+
+  if (!paymentSelectedStudent) {
+
+    toast(
+      'Sélectionnez d’abord un élève.'
+    );
+
+    return;
+  }
+
+  const amount =
+    Number(
+      document.getElementById(
+        'paymentAmount'
+      )?.value || 0
+    );
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+
+    toast(
+      'Entrez le montant du paiement.'
+    );
+
+    return;
+  }
+
+  const data =
+    await paymentApi(
+      '/api/payments',
+      {
+        method:'POST',
+        body:JSON.stringify({
+          studentId:
+            paymentSelectedStudent.id,
+          amount,
+          cashReceived: Number(
+            document.getElementById('paymentCashReceived')?.value || amount
+          )
+        })
+      }
+    );
+
+  if (!data || !data.success) {
+
+    toast(
+      data?.message ||
+      'Impossible d’enregistrer le paiement.'
+    );
+
+    return;
+  }
+
+  toast(
+    '✓ Paiement enregistré.'
+  );
+
+  if (
+    data.whatsapp &&
+    data.whatsapp.success
+  ) {
+
+    toast(
+      '✓ Paiement enregistré et parents notifiés sur WhatsApp.'
+    );
+
+  }
+
+  document.getElementById(
+    'paymentAmount'
+  ).value = '';
+
+  document.getElementById(
+    'paymentCashReceived'
+  ).value = '';
+
+  calculatePaymentChange();
+
+  await loadPaymentOverview();
+
+  await openPaymentStudent(
+    paymentSelectedStudent.id
+  );
+}
+
+function renderPaymentHistory(
+  history,
+  currency
+) {
+
+  const box =
+    document.getElementById(
+      'paymentHistory'
+    );
+
+  if (!box) return;
+
+  if (
+    !Array.isArray(history) ||
+    !history.length
+  ) {
+
+    box.innerHTML =
+      '<p class="muted">Aucun paiement enregistré.</p>';
+
+    return;
+  }
+
+  box.innerHTML =
+    history.map(payment => `
+
+      <div
+        style="
+          padding:14px 0;
+          border-bottom:1px solid rgba(255,255,255,.08);
+        "
+      >
+
+        <strong>
+          ${payment.amount} ${currency}
+        </strong>
+
+        <div class="muted">
+          Total payé :
+          ${payment.paidAfter} ${currency}
+        </div>
+
+        <div class="muted">
+          Reste :
+          ${payment.remaining} ${currency}
+        </div>
+
+        <div
+          class="muted"
+          style="font-size:11px"
+        >
+          ${new Date(payment.createdAt).toLocaleString()}
+        </div>
+
+      </div>
+
+    `).join('');
+}
+
+function escapeHtml(value) {
+
+  return String(value ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+}
+
+function showPage(id,btn){
+
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+
+  const page=document.getElementById(id);
+  if(page) page.classList.add("active");
+
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+
+  if(btn) btn.classList.add("active");
+
+  const titles={
+    dashboard:"Bienvenue dans SchoolFlow",
+    students:"Gestion des élèves",
+    classes:"Gestion des classes",
+    messages:"Communications",
+    convocations:"Convocations",
+    whatsapp:"Connexion WhatsApp",
+    settings:"Paramètres"
+  };
+
+  document.getElementById("pageTitle").textContent=titles[id]||"SchoolFlow";
+
+  if(id==="students") loadStudents();
+if(id==="payments") {
+  ensurePaymentAccess().then(ok => {
+
+    if (!ok) {
+      const paymentPage =
+        document.getElementById("payments");
+
+      if (paymentPage) {
+        paymentPage.classList.add("active");
+        paymentPage.style.display = "";
+        let notice = document.getElementById("paymentAccessNotice");
+        if (!notice) {
+          notice = document.createElement("div");
+          notice.id = "paymentAccessNotice";
+          notice.className = "card";
+          notice.style.borderColor = "#f59e0b";
+          notice.innerHTML = "<h2>🔒 Accès financier sécurisé</h2><p>Pour consulter les paiements, appuyez de nouveau sur Paiements et entrez votre code PIN financier.</p>";
+          paymentPage.prepend(notice);
+        }
+      }
+
+      const dashboardPage =
+        document.getElementById("dashboard");
+
+      if (dashboardPage) {
+        dashboardPage.classList.add("active");
+        dashboardPage.style.display = "";
+      }
+
+      const dashboardButton =
+        document.querySelector('[data-page="dashboard"]');
+
+      if (dashboardButton) {
+        document.querySelectorAll(".nav-item").forEach(btn => {
+          btn.classList.remove("active");
+        });
+
+        dashboardButton.classList.add("active");
+      }
+
+      const title =
+        document.getElementById("pageTitle");
+
+      if (title) {
+        title.textContent = "Bienvenue dans SchoolFlow";
+      }
+
+      return;
+    }
+
+    loadPaymentSettings();
+  });
+
+  return;
+}
+  if(id==="classes") loadClasses();
+  if(id==="messages") loadStudents();
+  if(id==="convocations") loadStudents();
+
+}
+
+async function api(url,options={}){
+
+  try{
+
+    const r=await fetch(url,{
+      headers:{
+        "Content-Type":"application/json",
+        ...(options.headers||{})
+      },
+      ...options
+    });
+
+    return await r.json();
+
+  }catch(e){
+
+    toast("Erreur de connexion au serveur");
+    return null;
+
+  }
+
+}
+
+async function loadSchool(){
+  const data = await api("/api/school");
+
+  if(!data || !data.success){
+    return;
+  }
+
+  currentSchool = String(data.schoolName || "").trim();
+
+  const input = document.getElementById("schoolInput");
+  if(input){
+    input.value = currentSchool;
+  }
+
+  const title = document.getElementById("schoolTitle");
+  if(title && currentSchool){
+    title.textContent = currentSchool;
+  }
+}
+
+async function saveSchool(){
+
+  const input =
+    document.getElementById("schoolInput");
+
+  const name =
+    String(input?.value || "").trim();
+
+  if(!name){
+    toast("Entrez le nom de l'établissement");
+    return;
+  }
+
+  const data =
+    await api("/api/school", {
+      method: "POST",
+      body: JSON.stringify({
+        schoolName: name
+      })
+    });
+
+  if(!data || !data.success){
+    toast(
+      data?.message ||
+      "Impossible d'enregistrer le nom de l'établissement."
+    );
+    return;
+  }
+
+  const savedName =
+    String(
+      data.schoolName || name
+    ).trim();
+
+  refreshSchoolNameEverywhere(savedName);
+
+  await loadSchool();
+
+  toast("✓ Nom de l'établissement enregistré partout.");
+}
+
+async function loadStudents(){
+
+  /*
+   * SCHOOL FLOW
+   * Isolation stricte des élèves.
+   * Le serveur est la source de vérité.
+   */
+
+  // Effacer immédiatement les anciennes données.
+  students = [];
+  selectedStudent = null;
+
+  const count = document.getElementById("studentCount");
+  const box = document.getElementById("studentsList");
+
+  if(count){
+    count.textContent = "0";
+  }
+
+  if(box){
+    box.innerHTML =
+      '<p class="muted">Chargement des élèves...</p>';
+  }
+
+  // Vérifier l'établissement réellement actif côté serveur.
+  const school = await api("/api/school");
+
+  if(
+    !school ||
+    !school.success ||
+    !school.schoolId
+  ){
+
+    students = [];
+
+    if(count){
+      count.textContent = "0";
+    }
+
+    if(box){
+      box.innerHTML =
+        '<p class="muted">Aucun établissement actif.</p>';
+    }
+
+    fillStudentSelects();
+    return;
+  }
+
+  // Le nom affiché vient toujours du serveur.
+  refreshSchoolNameEverywhere(
+    String(school.schoolName || "").trim()
+  );
+
+  // Charger uniquement les élèves de l'établissement actif.
+  const data = await api("/api/students");
+
+  if(!data || !data.success){
+
+    students = [];
+
+    if(count){
+      count.textContent = "0";
+    }
+
+    if(box){
+      box.innerHTML =
+        '<p class="muted">Impossible de charger les élèves.</p>';
+    }
+
+    fillStudentSelects();
+    return;
+  }
+
+  // Remplacement complet : aucune ancienne donnée ne reste.
+  students = Array.isArray(data.students)
+    ? data.students
+    : [];
+
+  if(count){
+    count.textContent = students.length;
+  }
+
+  renderStudents();
+  fillStudentSelects();
+}
+
+
+function renderStudents(){
+
+  const box=document.getElementById("studentsList");
+
+  if(!students.length){
+
+    box.innerHTML='<p class="muted">Aucun élève enregistré.</p>';
+    return;
+
+  }
+
+  box.innerHTML=students.map(s=>`
+
+    <div class="student">
+
+      <b>${escapeHtml(s.name || s.fullName || "Élève sans nom")}</b><br><span class="muted">Matricule : ${escapeHtml(s.matricule || "À attribuer")}</span><br><span class="muted">🎓 ${escapeHtml(s.className || "Classe inconnue")}
+      </span>
+
+      <br><br>
+
+      <span class="muted">
+        Père : ${escapeHtml(s.parents?.father?.name || s.fatherName || "—")}
+        ${escapeHtml(s.parents?.father?.phone || s.fatherPhone || "")}
+      </span>
+
+      <br>
+
+      <span class="muted">
+        Mère : ${escapeHtml(s.parents?.mother?.name || s.motherName || "—")}
+        ${escapeHtml(s.parents?.mother?.phone || s.motherPhone || "")}
+      </span>
+
+    </div>
+
+  `).join("");
+
+}
+
+function fillStudentSelects(){
+
+  const select = document.getElementById("convStudent");
+
+  if(select){
+    select.innerHTML =
+      '<option value="">Sélectionner un élève</option>' +
+      students.map(s =>
+        '<option value="' + escapeHtml(String(s.id)) + '">' +
+        escapeHtml(s.name || s.fullName || "Élève sans nom") +
+        ' — ' +
+        escapeHtml(s.className || "Classe inconnue") +
+        '</option>'
+      ).join("");
+  }
+
+  renderCommunicationRecipients();
+}
+
+let communicationSelectedIds = new Set();
+let communicationPreviewIds = [];
+
+function getCommunicationSelectedStudents(){
+  return students.filter(s =>
+    communicationSelectedIds.has(String(s.id))
+  );
+}
+
+function renderCommunicationRecipients(){
+
+  const classFilter = document.getElementById("messageClassFilter");
+  const search = document.getElementById("messageStudentSearch");
+  const list = document.getElementById("messageStudentList");
+  const allSchool = document.getElementById("messageAllSchool");
+  const count = document.getElementById("messageSelectionCount");
+
+  if(!classFilter || !search || !list || !allSchool || !count) return;
+
+  const previousClass = classFilter.value;
+
+  const classNames = [...new Set(
+    students.map(s => String(s.className || "Classe non définie").trim())
+  )].sort((a,b) => a.localeCompare(b, "fr"));
+
+  classFilter.innerHTML =
+    '<option value="">Toutes les classes</option>' +
+    classNames.map(name =>
+      '<option value="' + escapeHtml(name) + '">' +
+      escapeHtml(name) +
+      '</option>'
+    ).join("");
+
+  if(classNames.includes(previousClass)){
+    classFilter.value = previousClass;
+  }
+
+  allSchool.checked =
+    students.length > 0 &&
+    communicationSelectedIds.size === students.length;
+
+  const query = search.value.trim().toLocaleLowerCase("fr");
+  const selectedClass = classFilter.value;
+
+  const filtered = students.filter(s => {
+
+    const name = String(s.name || s.fullName || "").toLocaleLowerCase("fr");
+    const className = String(s.className || "Classe non définie");
+
+    const matricule = String(s.matricule || "")
+      .toLocaleLowerCase("fr")
+      .replace(/[\s-]/g, "");
+
+    const searchValue = query.replace(/[\s-]/g, "");
+
+    const matchesSearch =
+      !query ||
+      name.includes(query) ||
+      className.toLocaleLowerCase("fr").includes(query) ||
+      matricule.includes(searchValue);
+
+    const matchesClass =
+      !selectedClass || className === selectedClass;
+
+    return matchesSearch && matchesClass;
+  });
+
+  list.innerHTML = "";
+
+  if(!filtered.length){
+    list.innerHTML =
+      '<p class="muted">Aucun élève correspondant.</p>';
+  }
+
+  filtered.forEach(student => {
+
+    const label = document.createElement("label");
+    label.style.cssText =
+      "display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid #8883;";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = String(student.id);
+    checkbox.checked = communicationSelectedIds.has(String(student.id));
+
+    checkbox.addEventListener("change", () => {
+
+      const id = String(student.id);
+
+      if(checkbox.checked){
+        communicationSelectedIds.add(id);
+      }else{
+        communicationSelectedIds.delete(id);
+      }
+
+      renderCommunicationRecipients();
+    });
+
+    const text = document.createElement("span");
+    text.textContent =
+      (student.name || student.fullName || "Élève sans nom") +
+      " — " +
+      (student.className || "Classe inconnue");
+
+    label.appendChild(checkbox);
+    label.appendChild(text);
+    list.appendChild(label);
+  });
+
+  const total = communicationSelectedIds.size;
+
+  count.textContent =
+    total + (total > 1 ? " élèves sélectionnés" : " élève sélectionné");
+
+  classFilter.onchange = renderCommunicationRecipients;
+  search.oninput = renderCommunicationRecipients;
+
+  allSchool.onchange = function(){
+
+    communicationSelectedIds.clear();
+
+    if(allSchool.checked){
+      students.forEach(s =>
+        communicationSelectedIds.add(String(s.id))
+      );
+    }
+
+    renderCommunicationRecipients();
+  };
+
+  const addClass = document.getElementById("messageAddClass");
+
+  if(addClass){
+    addClass.onclick = function(){
+
+      const className = classFilter.value;
+
+      if(!className){
+        toast("Sélectionnez d'abord une classe.");
+        return;
+      }
+
+      students
+        .filter(s => String(s.className || "Classe non définie") === className)
+        .forEach(s =>
+          communicationSelectedIds.add(String(s.id))
+        );
+
+      renderCommunicationRecipients();
+      toast("Tous les élèves de cette classe ont été sélectionnés.");
+    };
+  }
+
+  const clear = document.getElementById("messageClearSelection");
+
+  if(clear){
+    clear.onclick = function(){
+      communicationSelectedIds.clear();
+      renderCommunicationRecipients();
+      toast("Sélection effacée.");
+    };
+  }
+}
+async function ajouterEleveManuellementV2() {
+  const button = document.getElementById("btnAjouterEleveV2");
+  if (!button || button.disabled) return;
+
+  const ids = [
+    "studentName", "studentClass",
+    "fatherName", "fatherPhone",
+    "motherName", "motherPhone"
+  ];
+
+  const values = {};
+  for (const id of ids) {
+    const field = document.getElementById(id);
+    if (!field) {
+      toast("Formulaire incomplet : champ introuvable.");
+      return;
+    }
+    values[id] = field.value.trim();
+  }
+
+  if (Object.values(values).some(value => !value)) {
+    toast("Remplis les six champs obligatoires.");
+    return;
+  }
+
+  const data = {
+    name: values.studentName,
+    className: values.studentClass,
+    fatherName: values.fatherName,
+    fatherPhone: values.fatherPhone,
+    motherName: values.motherName,
+    motherPhone: values.motherPhone
+  };
+
+  const originalText = button.textContent;
+  button.disabled = true;
+  button.textContent = "Enregistrement...";
+
+  try {
+    const result = await api("/api/students", {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+
+    if (!result) {
+      toast("Pas de réponse du serveur. Réessaie.");
+      return;
+    }
+
+    if (result.success !== true) {
+      console.error("ÉCHEC AJOUT ÉLÈVE :", result);
+      toast(result.message || result.error || "Échec de l'enregistrement.");
+      return;
+    }
+
+    toast("Élève ajouté. Matricule : " +
+      (result.student && result.student.matricule
+        ? result.student.matricule : "attribué"));
+
+    ids.forEach(id => {
+      document.getElementById(id).value = "";
+    });
+
+    await loadStudents();
+  } catch (error) {
+    console.error("ERREUR AJOUT ÉLÈVE :", error);
+    toast(error.message || "Erreur pendant l'enregistrement.");
+  } finally {
+    button.disabled = false;
+    button.textContent = originalText;
+  }
+}
+
+async function loadClasses(){
+
+  const data=await api("/api/classes");
+
+  if(!data || !data.success)return;
+
+  classes=data.classes||[];
+
+  document.getElementById("classCount").textContent=classes.length;
+
+  const box=document.getElementById("classesList");
+
+  if(!classes.length){
+
+    box.innerHTML='<p class="muted">Aucune classe enregistrée.</p>';
+    return;
+
+  }
+
+  box.innerHTML=classes.map((c,index)=>`
+
+    <div class="student"
+         onclick="openClassStudents(${index})"
+         style="cursor:pointer;">
+
+      <b>🎓 ${escapeHtml(c.name)}</b>
+
+      <br>
+
+      <span class="muted">
+        ${c.count} élève(s)
+      </span>
+
+      <span style="float:right;">›</span>
+
+    </div>
+
+  `).join("");
+
+}
+
+
+async function recordLateArrival(studentId) {
+
+  const button = document.getElementById('lateArrivalButton');
+
+  studentId =
+    studentId ||
+    (button ? button.dataset.studentId : '');
+
+  if (!studentId) {
+    alert('Élève introuvable.');
+    return;
+  }
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = '⏳ Enregistrement...';
+  }
+
+  try {
+
+    const response = await api('/api/students/late', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        studentId: String(studentId)
+      })
+    });
+
+    if (!response || !response.success) {
+
+      alert(
+        response?.message ||
+        'Impossible d’enregistrer le retard.'
+      );
+
+      if (button) {
+        button.disabled = false;
+        button.textContent = '⏰ Enregistrer un retard';
+      }
+
+      return;
+    }
+
+    const sent = Number(response.sent || 0);
+    const total = Number(response.totalParents || 0);
+
+    alert(
+      (response.message || 'Retard enregistré.') +
+      '\n\n' +
+      'Heure d’arrivée : ' +
+      (response.event?.time || '—') +
+      '\n' +
+      'Messages WhatsApp envoyés : ' +
+      sent + '/' + total
+    );
+
+    await loadClasses();
+    openStudentProfile(studentId);
+
+  } catch (error) {
+
+    console.error('SchoolFlow retard:', error);
+
+    alert(
+      error?.message ||
+      'Erreur lors de l’enregistrement du retard.'
+    );
+
+    if (button) {
+      button.disabled = false;
+      button.textContent = '⏰ Enregistrer un retard';
+    }
+  }
+}
+function openStudentProfile(studentId){
+
+  const student =
+    students.find(s => String(s.id) === String(studentId)) ||
+    classes.flatMap(c => c.students || [])
+      .find(s => String(s.id) === String(studentId));
+
+  if(!student){
+    alert("Élève introuvable.");
+    return;
+  }
+
+  const name = student.name || student.fullName || "Élève sans nom";
+  const className = student.className || "Classe inconnue";
+
+  const fatherName =
+    (student.parents && student.parents.father && student.parents.father.name) ||
+    student.fatherName || "—";
+
+  const fatherPhone =
+    (student.parents && student.parents.father && student.parents.father.phone) ||
+    student.fatherPhone || "—";
+
+  const motherName =
+    (student.parents && student.parents.mother && student.parents.mother.name) ||
+    student.motherName || "—";
+
+  const motherPhone =
+    (student.parents && student.parents.mother && student.parents.mother.phone) ||
+    student.motherPhone || "—";
+
+  const history = Array.isArray(student.history)
+    ? student.history
+    : Array.isArray(student.events)
+      ? student.events
+      : [];
+
+  const countType = function(words){
+    return history.filter(function(e){
+      const type = String(e.type || "").toLowerCase();
+      return words.some(function(word){
+        return type.includes(word);
+      });
+    }).length;
+  };
+
+  const convocations = countType(["convocation"]);
+  const retards = countType(["retard"]);
+  const absences = countType(["absence"]);
+  const incidents = countType(["incident", "discipline"]);
+  const communications = countType(["message", "communication", "communique"]);
+
+  const historyHtml = history.length
+    ? history.map(function(e){
+        return '<div class="student">' +
+          '<b>' + escapeHtml(e.type || "Événement") + '</b><br>' +
+          '<span class="muted">' +
+          escapeHtml(e.date || e.createdAt || "") +
+          '</span>' +
+          (e.reason
+            ? '<br><span class="muted">' + escapeHtml(e.reason) + '</span>'
+            : '') +
+          '</div>';
+      }).join("")
+    : '<div class="student"><span class="muted">Aucun événement enregistré pour le moment.</span></div>';
+
+  const box = document.getElementById("classesList");
+
+  box.innerHTML =
+    '<div style="margin-bottom:18px;">' +
+      `<button class="btn" onclick="loadClasses()">← Retour aux classes</button>` +
+`<!-- SCHOOL FLOW — BOUTONS EXCLUSION PROFIL V2 -->
+<div
+  style="
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:12px;
+    margin-top:12px;
+  "
+>
+  <button
+    type="button"
+    class="btn"
+    style="
+      width:100%;
+      border:1px solid #dc2626 !important;
+      background:rgba(220,38,38,.10) !important;
+      color:#ff4d4d !important;
+    "
+    onclick="openExclusionModal('temporary', '${studentId}')"
+  >
+    🚫 Exclusion temporaire
+  </button>
+
+  <button
+    type="button"
+    class="btn"
+    style="
+      width:100%;
+      border:1px solid #991b1b !important;
+      background:rgba(153,27,27,.16) !important;
+      color:#ff6b6b !important;
+    "
+    onclick="openExclusionModal('permanent', '${studentId}')"
+  >
+    ⛔ Exclusion définitive
+  </button>
+</div>` +
+    '</div>' +
+
+    '<div class="card">' +
+
+      '<div style="margin-bottom:24px;">' +
+        '<h2>👤 ' + escapeHtml(name) + '</h2>' +
+        '<p class="muted">Matricule scolaire : <b>' + escapeHtml(student.matricule || "Non attribué") + '</b></p>' +
+      '<p class="muted">🎓 Classe : ' + escapeHtml(className) + '</p>' +
+      '</div>' +
+
+      '<h3>📊 Bilan scolaire</h3>\n<div style="margin:16px 0 22px;">\n  <button\n    id="lateArrivalButton"\n    class="btn"\n    onclick="recordLateArrival(this.dataset.studentId)" data-student-id="' + String(studentId) + '">\n    ⏰ Enregistrer un retard\n  </button>\n</div>' +
+
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0 28px;">' +
+
+        '<div class="student"><b style="font-size:24px;">' + convocations + '</b><br><span class="muted">📌 Convocations</span></div>' +
+
+        '<div class="student"><b style="font-size:24px;">' + retards + '</b><br><span class="muted">⏰ Retards</span></div>' +
+
+        '<div class="student"><b style="font-size:24px;">' + absences + '</b><br><span class="muted">🚫 Absences</span></div>' +
+
+        '<div class="student"><b style="font-size:24px;">' + incidents + '</b><br><span class="muted">⚠️ Incidents</span></div>' +
+
+        '<div class="student"><b style="font-size:24px;">' + communications + '</b><br><span class="muted">💬 Communications</span></div>' +
+
+      '</div>' +
+
+      '<h3>👨‍👩‍👦 Parents</h3>' +
+
+      '<div class="student">' +
+        '<b>Père</b><br>' +
+        '<span class="muted">' + escapeHtml(fatherName) + '</span><br>' +
+        '<span class="muted">📞 ' + escapeHtml(fatherPhone) + '</span>' +
+      '</div>' +
+
+      '<div class="student">' +
+        '<b>Mère</b><br>' +
+        '<span class="muted">' + escapeHtml(motherName) + '</span><br>' +
+        '<span class="muted">📞 ' + escapeHtml(motherPhone) + '</span>' +
+      '</div>' +
+
+      '<h3 style="margin-top:26px;">📅 Historique</h3>' +
+
+      '<div style="margin-top:14px;">' +
+        historyHtml +
+      '</div>' +
+
+      '<div style="margin-top:24px;padding:16px;border-radius:12px;background:rgba(30,100,180,.08);">' +
+        '<b>📊 Bilan annuel</b>' +
+        '<p class="muted">' +
+          convocations + ' convocation(s) · ' +
+          retards + ' retard(s) · ' +
+          absences + ' absence(s) · ' +
+          incidents + ' incident(s) · ' +
+          communications + ' communication(s)' +
+        '</p>' +
+      '</div>' +
+
+    '</div>';
+}
+
+function openClassStudents(index){
+
+  const c = classes[index];
+
+  if (!c) return;
+
+  const box = document.getElementById("classesList");
+
+  box.innerHTML = `
+    <div style="margin-bottom:18px;">
+      <button class="btn" onclick="loadClasses()">
+        ← Retour aux classes
+      </button>
+    </div>
+
+    <div class="card">
+
+      <h2>🎓 ${escapeHtml(c.name)}</h2>
+
+      <p class="muted">
+        ${c.count} élève(s) dans cette classe
+      </p>
+
+      <div id="schoolFlowStudentsList" style="margin-top:18px;">
+
+        ${c.students.map((s,index)=>`
+          <div
+            class="student school-flow-clickable-student"
+            data-student-id="${escapeHtml(String(s.id))}"
+            style="cursor:pointer;"
+          >
+
+            <b>${escapeHtml(s.name || s.fullName || "Élève sans nom")}</b><br><span class="muted">Matricule : ${escapeHtml(s.matricule || "À attribuer")}</span><br><span class="muted">Voir le dossier de l’élève →
+            </span>
+
+          </div>
+        `).join("")}
+
+      </div>
+
+    </div>
+  `;
+
+  const studentButtons = box.querySelectorAll(
+    ".school-flow-clickable-student"
+  );
+
+  studentButtons.forEach(function(studentElement){
+
+    studentElement.addEventListener("click", function(){
+
+      const studentId = this.getAttribute("data-student-id");
+
+      if (!studentId) {
+        console.error("School Flow : ID élève introuvable.");
+        return;
+      }
+
+      console.log(
+        "School Flow : ouverture du dossier élève",
+        studentId
+      );
+
+      openStudentProfile(studentId);
+
+    });
+
+  });
+
+}
+function fillStudent(){
+  const selected = getCommunicationSelectedStudents();
+  selectedStudent = selected.length === 1 ? selected[0] : null;
+}
+
+function tomorrow(){
+
+  const d = new Date();
+  d.setDate(d.getDate()+1);
+  return d.toISOString().slice(0,10);
+}
+
+function formatDate(date){
+
+  if(!date)return "";
+
+  const d = new Date(date + "T00:00:00");
+
+  return d.toLocaleDateString("fr-FR",{
+    day:"2-digit",
+    month:"2-digit",
+    year:"numeric"
+  });
+}
+
+function generateMessage(){
+
+  const selected = getCommunicationSelectedStudents();
+
+  if(!selected.length){
+    toast("Sélectionnez au moins un destinataire.");
+    return;
+  }
+
+  const type =
+    document.getElementById("messageType").value;
+
+  const date =
+    document.getElementById("messageDate").value;
+
+  const time =
+    document.getElementById("messageTime").value;
+
+  const reason =
+    document.getElementById("messageReason").value.trim();
+
+  const body =
+    document.getElementById("messageBody").value
+      .replace(/\r\n?/g, "\n")
+      .replace(/[ \t]+\n/g, "\n")
+      .trim();
+
+  if(!body && !reason){
+    toast("Entrez votre message ou son objet.");
+    return;
+  }
+
+  selectedStudent =
+    selected.length === 1 ? selected[0] : null;
+
+  const school =
+    String(currentSchool || "").trim() || "Notre établissement";
+
+  const lines = [
+
+    "━━━━━━━━━━━━━━━━━━━━",
+    "🏫 *" + school + "*",
+    "📌 *" + type + "*",
+    "━━━━━━━━━━━━━━━━━━━━",
+    "",
+    "Madame, Monsieur,",
+    "",
+    "Nous souhaitons porter à votre connaissance les informations suivantes.",
+    ""
+  ];
+
+  if(selected.length === 1){
+
+    const student = selected[0];
+
+    lines.push(
+      "👤 *Élève :* " + (student.name || student.fullName || "Élève"),
+      "🎓 *Classe :* " + (student.className || "Non précisée"),
+      ""
+    );
+  }
+
+  if(date){
+    lines.push("📅 *Date :* " + formatDate(date));
+  }
+
+  if(time){
+    lines.push("🕒 *Heure :* " + time);
+  }
+
+  if(reason){
+    lines.push("📌 *Objet :* " + reason);
+  }
+
+  if(date || time || reason){
+    lines.push("");
+  }
+
+  if(body){
+    lines.push(body, "");
+  }
+
+  lines.push(
+    "Nous vous remercions pour votre attention et votre collaboration.",
+    "",
+    "━━━━━━━━━━━━━━━━━━━━",
+    "School Flow — Développé par NEXORA TECHNOLOGIES"
+  );
+
+  document.getElementById("messagePreview").value =
+    lines.join("\n");
+
+  communicationPreviewIds =
+    selected.map(s => String(s.id)).sort();
+
+  toast("Message officiel généré. Vérifiez l'aperçu avant l'envoi.");
+}
+
+async function sendSelectedMessage(){
+
+  const selected = getCommunicationSelectedStudents();
+
+  if(!selected.length){
+    toast("Sélectionnez au moins un destinataire.");
+    return;
+  }
+
+  const preview =
+    document.getElementById("messagePreview");
+
+  const message =
+    preview?.value?.trim() || "";
+
+  if(!message){
+    toast("Générez d'abord le message.");
+    return;
+  }
+
+  const currentIds =
+    selected.map(s => String(s.id)).sort();
+
+  if(
+    JSON.stringify(currentIds) !==
+    JSON.stringify(communicationPreviewIds)
+  ){
+    toast("La sélection a changé. Regénérez le message avant l'envoi.");
+    return;
+  }
+
+  if(!confirm(
+    "Envoyer ce communiqué aux parents des " +
+    selected.length +
+    " élève(s) sélectionné(s) ?"
+  )){
+    return;
+  }
+
+  const result = await api(
+    "/api/whatsapp/send-communication",
+    {
+      method:"POST",
+      body:JSON.stringify({
+        studentIds: currentIds,
+        message: message
+      })
+    }
+  );
+
+  if(!result){
+    return;
+  }
+
+  const sent = Number(result.sent || 0);
+  const total = Number(result.totalParents || 0);
+
+  if(result.success){
+
+    alert(
+      "✓ SCHOOL FLOW\n\n" +
+      (result.message || "Communication envoyée.") +
+      "\n\nParents destinataires : " +
+      sent + "/" + total
+    );
+
+    toast(result.message || "Communication envoyée.");
+
+  }else{
+
+    let errors = "";
+
+    if(Array.isArray(result.results)){
+      errors = result.results
+        .filter(r => !r.success)
+        .map(r =>
+          r.phone + " : " + (r.error || "Échec")
+        )
+        .join("\n");
+    }
+
+    alert(
+      "✕ ENVOI ÉCHOUÉ\n\n" +
+      (result.message || "Aucun message envoyé.") +
+      (errors ? "\n\n" + errors : "")
+    );
+  }
+}
+
+async function createConvocation(){
+
+  const id =
+    document.getElementById("convStudent")?.value || "";
+
+  const student =
+    students.find(
+      s => String(s.id) === String(id)
+    );
+
+  if(!student){
+    toast("Sélectionnez un élève");
+    return;
+  }
+
+  const reason =
+    document.getElementById("convReason")?.value || "";
+
+  if(!reason){
+    toast("Sélectionnez le motif");
+    return;
+  }
+
+  let schoolName = "";
+
+  try {
+
+    const schoolData =
+      await api("/api/school");
+
+    if(
+      schoolData &&
+      schoolData.schoolName
+    ){
+
+      schoolName =
+        String(
+          schoolData.schoolName
+        ).trim();
+
+      currentSchool =
+        schoolName;
+    }
+
+  } catch(error) {
+
+    console.error(
+      "School Flow - établissement :",
+      error
+    );
+
+  }
+
+  if(!schoolName){
+
+    schoolName =
+      String(
+        currentSchool || ""
+      ).trim() ||
+      "L’établissement";
+
+  }
+
+  const studentName =
+    String(
+      student.name ||
+      student.fullName ||
+      "Élève"
+    ).trim();
+
+  const className =
+    String(
+      student.className ||
+      "Classe non précisée"
+    ).trim();
+
+  // Calcul automatique de la date de demain
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const tomorrowText =
+    tomorrow.toLocaleDateString(
+      "fr-FR",
+      {
+        weekday: "long",
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+      }
+    );
+
+  const message =
+`╭⊷━━━━━━━━━━━━━━━━━━━━◈
+┃ · ͟͟͞͞➳❥ *Chers parents de l’élève ${studentName},*
+
+┃ · ͟͟͞͞➳❥ Vous êtes priés de bien vouloir vous présenter à la Direction de *${schoolName}* *demain, ${tomorrowText}*, concernant votre enfant *${studentName}*, inscrit(e) en classe de *${className}*.
+
+┃ · ͟͟͞͞➳❥ Cette convocation fait suite à un problème survenu au sein de l’établissement et nécessite votre présence afin d’échanger avec la Direction et de prendre connaissance de la situation.
+
+┃ · ͟͟͞͞➳❥ Les motifs précis de cette convocation vous seront communiqués directement à la *Direction des disciplines*.
+
+┃ · ͟͟͞͞➳❥ Nous vous remercions de bien vouloir prendre les dispositions nécessaires afin de vous présenter à l’établissement.
+
+┃ · ͟͟͞͞➳❥ *La Direction des disciplines*
+┃ · ͟͟͞͞➳❥ *${schoolName}*
+
+╰⊷━━━━━━━━━━━━━━━━━━━━◈
+┃ · ͟͟͞͞➳❥ *SCHOOL FLOW*
+╰⊷━━━━━━━━━━━━━━━━━━━━◈`;
+
+  const preview =
+    document.getElementById("convPreview");
+
+  if(preview){
+    preview.value = message;
+  }
+
+  const button =
+    document.getElementById("sendConvocationButton");
+
+  if(button){
+    button.disabled = false;
+    button.style.opacity = "1";
+    button.style.cursor = "pointer";
+    button.textContent =
+      "✓ OK — Envoyer aux parents";
+  }
+
+  const status =
+    document.getElementById("convocationSendStatus");
+
+  if(status){
+    status.textContent =
+      "✓ Convocation générée pour demain.";
+  }
+
+  toast("Convocation générée.");
+}
+
+async function sendConvocation(){
+
+  const studentId =
+    document.getElementById("convStudent")?.value || "";
+
+  const preview =
+    document.getElementById("convPreview");
+
+  const message =
+    preview?.value?.trim() || "";
+
+  const button =
+    document.getElementById("sendConvocationButton");
+
+  const status =
+    document.getElementById("convocationSendStatus");
+
+  if (!studentId) {
+
+    toast("Sélectionnez d’abord un élève.");
+
+    return;
+  }
+
+  if (!message) {
+
+    toast("Générez d’abord la convocation.");
+
+    return;
+  }
+
+  if (button) {
+
+    button.disabled = true;
+    button.textContent = "⏳ Envoi aux parents...";
+  }
+
+  if (status) {
+
+    status.textContent =
+      "Transmission de la convocation par WhatsApp...";
+  }
+
+  try {
+
+    const result =
+      await api("/api/whatsapp/send-to-parents", {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+
+          studentId: String(studentId),
+          message: message
+
+        })
+      });
+
+    if (!result || !result.success) {
+
+      const errorMessage =
+        result?.message ||
+        "Impossible d’envoyer la convocation.";
+
+      if (status) {
+        status.textContent = errorMessage;
+      }
+
+      toast(errorMessage);
+
+      return;
+    }
+
+    const sent =
+      Number(result.sent || 0);
+
+    const total =
+      Number(result.totalParents || 0);
+
+    const confirmation =
+      (result.message || "Convocation envoyée.") +
+      " — " +
+      sent +
+      "/" +
+      total +
+      " parent(s)";
+
+    if (status) {
+
+      status.textContent =
+        "✓ " + confirmation;
+    }
+
+    toast("✓ Convocation envoyée aux parents.");
+
+  } catch (error) {
+
+    console.error(
+      "SchoolFlow convocation:",
+      error
+    );
+
+    const messageError =
+      error?.message ||
+      "Erreur pendant l’envoi WhatsApp.";
+
+    if (status) {
+      status.textContent = messageError;
+    }
+
+    toast(messageError);
+
+  } finally {
+
+    if (button) {
+
+      button.disabled = false;
+      button.textContent =
+        "✓ Confirmer et envoyer aux parents";
+    }
+  }
+}
+async function connectWhatsApp(){
+
+  try {
+
+    toast("Connexion WhatsApp en cours...");
+
+    document.getElementById("qrArea").style.display="block";
+
+    const data = await api("/api/whatsapp/connect",{
+      method:"POST"
+    });
+
+    if(data && data.success){
+      toast(data.message || "Connexion WhatsApp lancée");
+    }else if(data && data.message){
+      toast(data.message);
+    }
+
+    await checkWhatsApp();
+
+  } catch(error) {
+
+    console.error("SchoolFlow WhatsApp:",error);
+    toast(error.message || "Impossible de lancer WhatsApp.");
+
+  }
+
+}
+
+function showPairingCodeForm(){
+
+  const area=document.getElementById("pairingArea");
+
+  if(!area)return;
+
+  area.style.display =
+    area.style.display==="none" ? "block" : "none";
+
+}
+
+async function requestWhatsAppPairingCode(){
+
+  const input =
+    document.getElementById("pairingPhone");
+
+  const result =
+    document.getElementById("pairingCodeResult");
+
+  const codeBox =
+    document.getElementById("pairingCode");
+
+  const phone =
+    (input?.value || "").replace(/\\D/g,"");
+
+  if(!phone){
+
+    toast(
+      "Entrez le numéro WhatsApp avec l'indicatif pays."
+    );
+
+    input?.focus();
+
+    return;
+  }
+
+  try{
+
+    /* Vérifier l’état réel avant de demander un nouveau code. */
+
+    const status =
+      await api("/api/whatsapp/status");
+
+    if(status?.connected){
+
+      const connectedPhone =
+        status.phone ||
+        "un numéro";
+
+      toast(
+        "WhatsApp est déjà connecté sur " +
+        connectedPhone +
+        ". Aucun nouveau code n’est nécessaire."
+      );
+
+      if(result){
+        result.style.display = "none";
+      }
+
+      await checkWhatsApp();
+
+      return;
+    }
+
+    toast(
+      "Génération du code d'appairage..."
+    );
+
+    const data =
+      await api(
+        "/api/whatsapp/pairing-code",
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:JSON.stringify({
+            phone
+          })
+        }
+      );
+
+    if(!data || !data.success){
+
+      throw new Error(
+        data?.message ||
+        "Impossible de générer le code."
+      );
+    }
+
+    if(codeBox){
+
+      codeBox.textContent =
+        data.pairingCode ||
+        "------";
+    }
+
+    if(result){
+
+      result.style.display =
+        "block";
+    }
+
+    toast(
+      "✓ Code d'appairage généré."
+    );
+
+    await checkWhatsApp();
+
+  }catch(error){
+
+    console.error(
+      "SchoolFlow pairing:",
+      error
+    );
+
+    toast(
+      error?.message ||
+      "Erreur lors de la génération du code."
+    );
+  }
+}
+async function disconnectWhatsApp(){
+
+  if(!confirm(
+    "Voulez-vous déconnecter WhatsApp ?\n\nLa session sera conservée."
+  )){
+    return;
+  }
+
+  try{
+
+    toast("Déconnexion WhatsApp...");
+
+    const data=await api("/api/whatsapp/disconnect",{
+      method:"POST"
+    });
+
+    if(!data || !data.success){
+
+      throw new Error(
+        data?.message || "Impossible de déconnecter WhatsApp."
+      );
+
+    }
+
+    toast("WhatsApp déconnecté.");
+
+    await checkWhatsApp();
+
+  }catch(error){
+
+    console.error("SchoolFlow disconnect:",error);
+
+    toast(
+      error.message ||
+      "Erreur lors de la déconnexion."
+    );
+
+  }
+
+}
+
+async function deleteWhatsAppConnection(){
+
+  if(!confirm(
+    "ATTENTION : cette action supprimera complètement la session WhatsApp actuelle.\n\nVoulez-vous continuer ?"
+  )){
+    return;
+  }
+
+  try{
+
+    toast("Suppression de la session WhatsApp...");
+
+    const data=await api("/api/whatsapp/connection",{
+      method:"DELETE"
+    });
+
+    if(!data || !data.success){
+
+      throw new Error(
+        data?.message || "Impossible de supprimer la session."
+      );
+
+    }
+
+    document.getElementById("pairingArea").style.display="none";
+    document.getElementById("qrArea").style.display="none";
+    document.getElementById("pairingCodeResult").style.display="none";
+
+    toast("Session WhatsApp supprimée.");
+
+    await checkWhatsApp();
+
+  }catch(error){
+
+    console.error("SchoolFlow delete WhatsApp:",error);
+
+    toast(
+      error.message ||
+      "Erreur lors de la suppression."
+    );
+
+  }
+
+}
+
+async function connectNewWhatsApp(){
+
+  if(!confirm(
+    "Le numéro WhatsApp actuellement connecté sera supprimé.\n\nVoulez-vous connecter un nouveau numéro ?"
+  )){
+    return;
+  }
+
+  try{
+
+    toast("Préparation du nouveau numéro...");
+
+    const data=await api("/api/whatsapp/new-number",{
+      method:"POST"
+    });
+
+    if(!data || !data.success){
+
+      throw new Error(
+        data?.message ||
+        "Impossible de préparer le nouveau numéro."
+      );
+
+    }
+
+    document.getElementById("pairingArea").style.display="block";
+
+    toast(
+      "Nouvelle connexion prête. Choisissez QR ou code d'appairage."
+    );
+
+    await checkWhatsApp();
+
+  }catch(error){
+
+    console.error("SchoolFlow new WhatsApp:",error);
+
+    toast(
+      error.message ||
+      "Erreur lors de la préparation du nouveau numéro."
+    );
+
+  }
+
+}
+
+async function checkWhatsApp(){
+
+  try{
+
+    const data=await api("/api/whatsapp/status");
+
+    if(!data)return;
+
+    const status=data.status || data.state || "disconnected";
+
+    const box=document.getElementById("waStatus");
+    const stat=document.getElementById("waStat");
+
+    const title=document.getElementById("waConnectionTitle");
+    const phone=document.getElementById("waPhone");
+    const actions=document.getElementById("waActions");
+
+    if(status==="connected"){
+
+      if(box)box.textContent="🟢 WhatsApp connecté";
+      if(stat)stat.textContent="OK";
+
+      if(title)title.textContent="🟢 WhatsApp connecté";
+
+      if(phone){
+
+        phone.textContent =
+          data.phone
+            ? "📱 Numéro connecté : +" + data.phone
+            : "📱 Numéro connecté";
+
+      }
+
+      if(actions)actions.style.display="block";
+
+      document.getElementById("qrArea").style.display="none";
+      document.getElementById("pairingArea").style.display="none";
+
+    }else if(
+      status==="connecting" ||
+      status==="waiting"
+    ){
+
+      if(box)box.textContent="🟡 WhatsApp en connexion";
+      if(stat)stat.textContent="…";
+
+      if(title)title.textContent="🟡 WhatsApp en connexion";
+
+      if(phone)phone.textContent="Connexion en cours...";
+
+      if(actions)actions.style.display="none";
+
+    }else if(status==="qr"){
+
+      if(box)box.textContent="🟡 QR Code disponible";
+      if(stat)stat.textContent="QR";
+
+      if(title)title.textContent="🟡 QR Code WhatsApp disponible";
+
+      if(phone)phone.textContent="Scannez le QR Code avec WhatsApp.";
+
+      if(actions)actions.style.display="none";
+
+      await loadWhatsAppQR();
+
+    }else if(status==="pairing"){
+
+      if(box)box.textContent="🟡 Code d'appairage disponible";
+      if(stat)stat.textContent="CODE";
+
+      if(title)title.textContent="🟡 Appairage WhatsApp en cours";
+
+      if(phone)phone.textContent="Utilisez le code affiché ci-dessous.";
+
+      if(actions)actions.style.display="none";
+
+    }else{
+
+      if(box)box.textContent="🔴 WhatsApp déconnecté";
+      if(stat)stat.textContent="OFF";
+
+      if(title)title.textContent="🔴 WhatsApp déconnecté";
+
+      if(phone)phone.textContent="Aucun numéro connecté.";
+
+      if(actions)actions.style.display="none";
+
+    }
+
+  }catch(error){
+
+    console.error("SchoolFlow WhatsApp status:",error);
+
+  }
+
+}
+
+async function loadWhatsAppQR(){
+
+  try{
+
+    const data=await api("/api/whatsapp/qr");
+
+    if(!data || !data.success || !data.qr){
+
+      return;
+    }
+
+    const area=document.getElementById("qrArea");
+    const imageArea=document.getElementById("qrImageArea");
+
+    if(!area || !imageArea)return;
+
+    area.style.display="block";
+
+    imageArea.innerHTML =
+      '<img src="' +
+      data.qr +
+      '" alt="QR WhatsApp" style="max-width:280px;width:100%;border-radius:12px;background:#fff;padding:10px;">';
+
+  }catch(error){
+
+    console.error("SchoolFlow QR:",error);
+
+  }
+
+}
+
+function escapeHtml(value){
+
+  return String(value||"")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+/* INITIALISATION */
+
+window.addEventListener("load", async () => {
+  try {
+    const messageDate = document.getElementById("messageDate");
+    const convDate = document.getElementById("convDate");
+
+    if (messageDate) messageDate.value = tomorrow();
+    if (convDate) convDate.value = tomorrow();
+
+    const hasAccount = typeof checkSchoolAccount === "function"
+      ? checkSchoolAccount()
+      : false;
+
+    document.getElementById("splash")?.classList.add("hide");
+
+    if (!hasAccount) {
+      return;
+    }
+
+    try { await loadSchool(); } catch (e) { console.error("SchoolFlow loadSchool:", e); }
+    try { await loadStudents(); } catch (e) { console.error("SchoolFlow loadStudents:", e); }
+    try { await loadClasses(); } catch (e) { console.error("SchoolFlow loadClasses:", e); }
+    try { await checkWhatsApp(); } catch (e) { console.error("SchoolFlow WhatsApp:", e); }
+
+    setInterval(() => {
+      try { checkWhatsApp(); } catch (e) { console.error("SchoolFlow WhatsApp:", e); }
+    }, 5000);
+
+  } catch (error) {
+    console.error("SchoolFlow démarrage:", error);
+    document.getElementById("splash")?.classList.add("hide");
+    document.getElementById("schoolAccountScreen")?.style.setProperty("display", "flex", "important");
+  }
+});
+
+
+async function registerSchoolAccount(email, schoolName, password, passwordConfirm) {
+  const response = await fetch('/api/account/register', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      email,
+      schoolName,
+      password,
+      passwordConfirm
+    })
+  });
+
+  const result = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || 'Création du compte impossible.');
+  }
+
+  localStorage.setItem('edusync_email', result.school.email);
+  localStorage.setItem('edusync_school_id', result.school.id);
+  localStorage.setItem('edusync_school_name', result.school.schoolName);
+
+  return result;
+}
+
+async function loginSchoolAccount(email, password) {
+  const response = await fetch('/api/account/login', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      email,
+      password
+    })
+  });
+
+  const result = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || 'Connexion impossible.');
+  }
+
+  localStorage.setItem('edusync_email', result.school.email);
+  localStorage.setItem('edusync_school_id', result.school.id);
+  localStorage.setItem('edusync_school_name', result.school.schoolName);
+
+  return result;
+}
+
+
+function showRegisterSchoolFlow() {
+  const screen = document.getElementById('schoolAccountScreen');
+  const login = document.getElementById('loginAccountBox');
+  const register = document.getElementById('registerAccountBox');
+  const message = document.getElementById('accountMessage');
+
+  if (screen) {
+    screen.style.setProperty('display', 'flex', 'important');
+    screen.style.setProperty('visibility', 'visible', 'important');
+    screen.style.setProperty('pointer-events', 'auto', 'important');
+  }
+  if (login) login.style.setProperty('display', 'none', 'important');
+  if (register) register.style.setProperty('display', 'block', 'important');
+  if (message) message.textContent = '';
+}
+
+
+
+function showLoginSchoolFlow() {
+  const screen = document.getElementById('schoolAccountScreen');
+  const login = document.getElementById('loginAccountBox');
+  const register = document.getElementById('registerAccountBox');
+  const message = document.getElementById('accountMessage');
+
+  if (screen) {
+    screen.style.setProperty('display', 'flex', 'important');
+    screen.style.setProperty('visibility', 'visible', 'important');
+    screen.style.setProperty('pointer-events', 'auto', 'important');
+  }
+  if (register) register.style.setProperty('display', 'none', 'important');
+  if (login) login.style.setProperty('display', 'block', 'important');
+  if (message) message.textContent = '';
+}
+
+
+async function registerSchoolFlow() {
+  const schoolName = document.getElementById('registerSchoolName').value.trim();
+  const email = document.getElementById('registerEmail').value.trim();
+  const password = document.getElementById('registerPassword').value;
+  const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+  const message = document.getElementById('accountMessage');
+
+  if (!schoolName || !email || !password || !passwordConfirm) {
+    message.textContent = 'Veuillez remplir tous les champs.';
+    return;
+  }
+  if (password.length < 8) {
+    message.textContent = 'Le mot de passe doit contenir au moins 8 caractères.';
+    return;
+  }
+  if (password !== passwordConfirm) {
+    message.textContent = 'Les deux mots de passe ne correspondent pas.';
+    return;
+  }
+
+  message.textContent = 'Création de votre établissement...';
+  try {
+    const result = await registerSchoolAccount(email, schoolName, password, passwordConfirm);
+    const emailInput = document.getElementById('accountEmail');
+    const passwordInput = document.getElementById('accountPassword');
+    if (emailInput) emailInput.value = email;
+    if (passwordInput) passwordInput.value = '';
+
+    showLoginSchoolFlow();
+    const screen = document.getElementById('schoolAccountScreen');
+    if (screen) screen.style.setProperty('display', 'flex', 'important');
+    message.textContent = (result?.message || 'Établissement créé avec succès.') +
+      ' Vous pouvez maintenant vous connecter.';
+  } catch (error) {
+    console.error(error);
+    message.textContent = error.message || 'Erreur lors de la création.';
+  }
+}
+
+
+/* SCHOOL_FLOW_DEVICE_PICKER_V1 */
+function showSchoolFlowDevicePicker() {
+  document.getElementById('sfDevicePicker')?.remove();
+
+  const screen = document.createElement('section');
+  screen.id = 'sfDevicePicker';
+  screen.setAttribute('role', 'dialog');
+  screen.setAttribute('aria-modal', 'true');
+  screen.setAttribute('aria-labelledby', 'sfDeviceTitle');
+
+  screen.innerHTML = `
+    <div class="sf-device-panel">
+      <div class="sf-device-kicker">School Flow · Espace de travail</div>
+      <h2 id="sfDeviceTitle">Sur quel appareil travaillez-vous ?</h2>
+      <p class="sf-device-description">
+        Choisissez votre format d’affichage pour adapter l’espace de travail
+        à votre appareil.
+      </p>
+      <div class="sf-device-options">
+        <button type="button" class="sf-device-option"
+          onclick="chooseSchoolFlowDevice('phone')">
+          <span class="sf-device-icon">📱</span>
+          <span><span class="sf-device-name">Téléphone</span>
+          <span class="sf-device-hint">Écran compact et navigation adaptée</span></span>
+        </button>
+        <button type="button" class="sf-device-option"
+          onclick="chooseSchoolFlowDevice('tablet')">
+          <span class="sf-device-icon">📲</span>
+          <span><span class="sf-device-name">Tablette</span>
+          <span class="sf-device-hint">Plus d’espace pour les dossiers et tableaux</span></span>
+        </button>
+        <button type="button" class="sf-device-option"
+          onclick="chooseSchoolFlowDevice('desktop')">
+          <span class="sf-device-icon">🖥️</span>
+          <span><span class="sf-device-name">Ordinateur</span>
+          <span class="sf-device-hint">Espace de travail élargi</span></span>
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(screen);
+}
+
+async function chooseSchoolFlowDevice(device) {
+  if (!['phone', 'tablet', 'desktop'].includes(device)) return;
+
+  document.body.classList.remove('sf-device-phone', 'sf-device-tablet', 'sf-device-desktop');
+  document.body.classList.add('sf-device-' + device);
+  try { localStorage.setItem('schoolFlowDeviceMode', device); } catch (_) {}
+
+  document.getElementById('sfDevicePicker')?.remove();
+
+  const pending = window.sfPendingNextButton;
+  window.sfPendingNextButton = null;
+  if (pending && pending.isConnected) {
+    window.sfBypassDevicePrompt = true;
+    try { pending.click(); } finally { window.sfBypassDevicePrompt = false; }
+    return;
+  }
+
+  const dashboard = document.getElementById('dashboard');
+  if (dashboard) {
+    dashboard.classList.remove('active');
+    dashboard.style.setProperty('display', 'none', 'important');
+  }
+  document.getElementById('schoolFlowRedIntro')?.style.setProperty('display', 'none', 'important');
+  document.getElementById('schoolFlowRedGate')?.style.setProperty('display', 'none', 'important');
+  document.documentElement.classList.remove('sf-red-auth-active');
+  document.body.classList.remove('sf-red-auth-active');
+
+  showLoginSchoolFlow();
+  const screen = document.getElementById('schoolAccountScreen');
+  if (screen) {
+    screen.style.setProperty('display', 'flex', 'important');
+    screen.style.setProperty('visibility', 'visible', 'important');
+    screen.style.setProperty('pointer-events', 'auto', 'important');
+  }
+}
+
+
+async function loginSchoolFlow() {
+  const email = document.getElementById('accountEmail').value.trim();
+  const password = document.getElementById('accountPassword').value;
+  const message = document.getElementById('accountMessage');
+
+  if (!email || !password) {
+    message.textContent = 'Veuillez saisir votre email et votre mot de passe.';
+    return;
+  }
+
+  message.textContent = 'Connexion...';
+  try {
+    await loginSchoolAccount(email, password);
+
+    const screen = document.getElementById('schoolAccountScreen');
+    if (screen) {
+      screen.style.setProperty('display', 'none', 'important');
+      screen.style.setProperty('visibility', 'hidden', 'important');
+      screen.style.setProperty('pointer-events', 'none', 'important');
+    }
+    document.getElementById('schoolFlowRedIntro')?.style.setProperty('display', 'none', 'important');
+    document.getElementById('schoolFlowRedGate')?.style.setProperty('display', 'none', 'important');
+
+    if (window.schoolFlowRedUI && typeof window.schoolFlowRedUI.release === 'function') {
+      window.schoolFlowRedUI.release();
+    }
+    document.documentElement.classList.remove('sf-red-auth-active');
+    document.body.classList.remove('sf-red-auth-active');
+    document.getElementById('sfDevicePicker')?.remove();
+
+    const dashboard = document.getElementById('dashboard');
+    if (dashboard) {
+      dashboard.classList.add('active');
+      dashboard.style.removeProperty('display');
+      dashboard.style.setProperty('visibility', 'visible', 'important');
+      dashboard.style.setProperty('opacity', '1', 'important');
+      dashboard.style.setProperty('pointer-events', 'auto', 'important');
+    }
+
+    message.textContent = 'Connexion réussie.';
+    for (const name of ['loadSchool', 'loadStudents', 'loadClasses', 'checkWhatsApp']) {
+      if (typeof window[name] === 'function') {
+        try { await window[name](); }
+        catch (e) { console.error('Erreur ' + name, e); }
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    message.textContent = error.message || 'Échec de la connexion.';
+  }
+}
+
+
+
+
+/* SCHOOL_FLOW_DEVICE_BEFORE_NEXT_V2 */
+(function installDevicePromptBeforeNext() {
+  document.addEventListener('click', function(event) {
+    if (window.sfBypassDevicePrompt) return;
+
+    const button = event.target.closest('button, input[type="button"], input[type="submit"]');
+    if (!button || !button.isConnected) return;
+
+    const gate = document.getElementById('schoolFlowRedGate');
+    if (!gate || !gate.contains(button)) return;
+
+    const label = (button.innerText || button.value || '').trim().toLocaleLowerCase('fr');
+    if (label !== 'suivant' && label !== 'suivant ›' && label !== 'suivant →') return;
+
+    if (window.sfDevicePromptShown) return;
+    window.sfDevicePromptShown = true;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    window.sfPendingNextButton = button;
+    showSchoolFlowDevicePicker();
+  }, true);
+})();
+
+function checkSchoolAccount() {
+  const email = localStorage.getItem('edusync_email');
+
+  if (!email) {
+    document.getElementById('schoolAccountScreen').style.display = 'flex';
+    return false;
+  }
+
+  return true;
+}
+
+</script>
+
+
+
+<!-- SCHOOL_FLOW_DEVICE_PICKER_RECOVERY_V2 -->
+<script>
+(function () {
+  'use strict';
+
+  if (window.sfDeviceRecoveryListenerInstalled) return;
+  window.sfDeviceRecoveryListenerInstalled = true;
+  window.sfDeviceRecoveryUsed = false;
+
+  document.addEventListener('click', function (event) {
+    if (window.sfBypassDevicePrompt) return;
+    if (window.sfDeviceRecoveryUsed) return;
+    if (document.getElementById('sfDevicePicker')) return;
+
+    const gate = document.getElementById('schoolFlowRedGate');
+    if (!gate) return;
+
+    let target = event.target;
+    if (target && target.nodeType !== 1) target = target.parentElement;
+    if (!target || typeof target.closest !== 'function') return;
+
+    const button = target.closest(
+      'button, input[type="button"], input[type="submit"], [role="button"]'
+    );
+
+    if (!button || !gate.contains(button) || button.disabled) return;
+
+    const label = (
+      button.innerText ||
+      button.value ||
+      button.getAttribute('aria-label') ||
+      ''
+    ).replace(/\s+/g, ' ').trim().toLocaleLowerCase('fr');
+
+    if (!/\bsuivant\b/.test(label)) return;
+    if (typeof window.showSchoolFlowDevicePicker !== 'function' &&
+        typeof showSchoolFlowDevicePicker !== 'function') return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    window.sfDeviceRecoveryUsed = true;
+    window.sfDevicePromptShown = true;
+    window.sfPendingNextButton = button;
+
+    showSchoolFlowDevicePicker();
+  }, true);
+})();
+</script>
+
+<!-- SCHOOLFLOW_BUTTON_GUARD_START -->
+<script>
+(function () {
+  'use strict';
+
+  // Empêche les doubles clics accidentels
+  const lockedButtons = new WeakSet();
+
+  function lockButton(button, busyText) {
+    if (!button || lockedButtons.has(button)) return false;
+
+    lockedButtons.add(button);
+
+    if (!button.dataset.originalText) {
+      button.dataset.originalText = button.innerHTML;
+    }
+
+    button.disabled = true;
+
+    if (busyText) {
+      button.innerHTML = busyText;
+    }
+
+    return true;
+  }
+
+  function unlockButton(button) {
+    if (!button) return;
+
+    button.disabled = false;
+
+    if (button.dataset.originalText) {
+      button.innerHTML = button.dataset.originalText;
+      delete button.dataset.originalText;
+    }
+
+    lockedButtons.delete(button);
+  }
+
+  function safeError(error, fallback) {
+    console.error('[SchoolFlow]', error);
+
+    const message =
+      error && error.message
+        ? error.message
+        : fallback;
+
+    if (typeof toast === 'function') {
+      toast(message || 'Une erreur est survenue.');
+    } else {
+      alert(message || 'Une erreur est survenue.');
+    }
+  }
+
+  // Sécurisation de l'ajout d'un élève
+  const originalAddStudent =
+    typeof window.addStudent === 'function'
+      ? window.addStudent
+      : null;
+
+  if (originalAddStudent) {
+    window.addStudent = async function () {
+      const button = document.querySelector(
+        'button[onclick*="addStudent"]'
+      );
+
+      if (button && !lockButton(button, '⏳ Enregistrement...')) {
+        return;
+      }
+
+      try {
+        await originalAddStudent();
+      } catch (error) {
+        safeError(
+          error,
+          "Impossible d'enregistrer l'élève."
+        );
+      } finally {
+        if (button) unlockButton(button);
+      }
+    };
+  }
+
+  // Sécurisation de l'envoi de message
+  const originalSendMessage =
+    typeof window.sendSelectedMessage === 'function'
+      ? window.sendSelectedMessage
+      : null;
+
+  if (originalSendMessage) {
+    window.sendSelectedMessage = async function () {
+      const button = document.querySelector(
+        'button[onclick*="sendSelectedMessage"]'
+      );
+
+      if (button && !lockButton(button, '⏳ Envoi...')) {
+        return;
+      }
+
+      try {
+        await originalSendMessage();
+      } catch (error) {
+        safeError(
+          error,
+          "Impossible d'envoyer le message."
+        );
+      } finally {
+        if (button) unlockButton(button);
+      }
+    };
+  }
+
+  // Sécurisation de la convocation
+  const originalConvocation =
+    typeof window.createConvocation === 'function'
+      ? window.createConvocation
+      : null;
+
+  if (originalConvocation) {
+    window.createConvocation = async function () {
+      const button = document.querySelector(
+        'button[onclick*="createConvocation"]'
+      );
+
+      if (button && !lockButton(button, '⏳ Création...')) {
+        return;
+      }
+
+      try {
+        await originalConvocation();
+      } catch (error) {
+        safeError(
+          error,
+          "Impossible de créer la convocation."
+        );
+      } finally {
+        if (button) unlockButton(button);
+      }
+    };
+  }
+
+  // Sécurisation de la connexion WhatsApp.
+  // Cette fonction ne modifie PAS la route WhatsApp.
+  const originalConnectWhatsApp =
+    typeof window.connectWhatsApp === 'function'
+      ? window.connectWhatsApp
+      : null;
+
+  if (originalConnectWhatsApp) {
+    window.connectWhatsApp = async function () {
+      const button = document.querySelector(
+        'button[onclick*="connectWhatsApp"]'
+      );
+
+      if (button && !lockButton(button, '⏳ Connexion...')) {
+        return;
+      }
+
+      try {
+        await originalConnectWhatsApp();
+      } catch (error) {
+        safeError(
+          error,
+          "Impossible de lancer la connexion WhatsApp."
+        );
+      } finally {
+        if (button) unlockButton(button);
+      }
+    };
+  }
+
+  // Sécurisation du QR d'inscription
+  const originalGenerateQR =
+    typeof window.generateStudentRegistrationQR === 'function'
+      ? window.generateStudentRegistrationQR
+      : null;
+
+  if (originalGenerateQR) {
+    window.generateStudentRegistrationQR = async function () {
+      const button = document.querySelector(
+        'button[onclick*="generateStudentRegistrationQR"]'
+      );
+
+      if (button && !lockButton(button, '⏳ Génération...')) {
+        return;
+      }
+
+      try {
+        await originalGenerateQR();
+      } catch (error) {
+        safeError(
+          error,
+          "Impossible de générer le QR code."
+        );
+      } finally {
+        if (button) unlockButton(button);
+      }
+    };
+  }
+
+  // Protection générale des boutons réellement reliés à une fonction.
+  document.addEventListener('click', function (event) {
+    const button = event.target.closest('button');
+
+    if (!button || button.disabled) return;
+
+    const onclick = button.getAttribute('onclick');
+
+    if (!onclick) return;
+
+    // Ces boutons restent entièrement gérés par leurs fonctions existantes.
+    // Aucun endpoint WhatsApp n'est modifié ici.
+    if (
+      onclick.includes('showPage(') ||
+      onclick.includes('showRegisterSchoolFlow(') ||
+      onclick.includes('showLoginSchoolFlow(') ||
+      onclick.includes('copyStudentRegistrationLink(') ||
+      onclick.includes('loadClasses(') ||
+      onclick.includes('openClassStudents(') ||
+      onclick.includes('openStudentProfile(')
+    ) {
+      return;
+    }
+  });
+
+  console.log('SchoolFlow : protection des boutons activée.');
+})();
+</script>
+<!-- SCHOOLFLOW_BUTTON_GUARD_END -->
+\n
+<script>
+
+let schoolFlowBotConfig = null;
+
+async function loadBotConfig() {
+  try {
+
+    const response =
+      await fetch('/api/bot/config');
+
+    const data =
+      await response.json();
+
+    if (!data.success) {
+      throw new Error(
+        data.message ||
+        'Impossible de charger la configuration.'
+      );
+    }
+
+    schoolFlowBotConfig =
+      data.config || {};
+
+    const schoolName =
+      data.schoolName ||
+      'Établissement';
+
+    const schoolBox =
+      document.getElementById('botSchoolName');
+
+    if (schoolBox) {
+      schoolBox.textContent =
+        '🏫 Établissement : ' +
+        schoolName;
+    }
+
+    const enabled =
+      document.getElementById('botEnabled');
+
+    const assistant =
+      document.getElementById('botAssistantName');
+
+    const welcome =
+      document.getElementById('botWelcomeMessage');
+
+    const unknown =
+      document.getElementById('botUnknownMessage');
+
+    const humanName =
+      document.getElementById('botHumanName');
+
+    const humanPhone =
+      document.getElementById('botHumanPhone');
+
+    if (enabled) {
+      enabled.checked =
+        schoolFlowBotConfig.enabled === true;
+    }
+
+    if (assistant) {
+      assistant.value =
+        schoolFlowBotConfig.assistantName || '';
+    }
+
+    if (welcome) {
+      welcome.value =
+        schoolFlowBotConfig.welcomeMessage || '';
+    }
+
+    if (unknown) {
+      unknown.value =
+        schoolFlowBotConfig.unknownMessage || '';
+    }
+
+    if (humanName) {
+      humanName.value =
+        schoolFlowBotConfig.humanContact?.name || '';
+    }
+
+    if (humanPhone) {
+      humanPhone.value =
+        schoolFlowBotConfig.humanContact?.phone || '';
+    }
+
+    renderBotKnowledge(
+      schoolFlowBotConfig.knowledge || []
+    );
+
+  } catch (error) {
+
+    console.error(
+      'School Flow Bot:',
+      error
+    );
+
+    const status =
+      document.getElementById('botSaveStatus');
+
+    if (status) {
+      status.textContent =
+        '❌ ' + error.message;
+    }
+  }
+}
+
+function renderBotKnowledge(items) {
+
+  const container =
+    document.getElementById(
+      'botKnowledgeList'
+    );
+
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  if (
+    !Array.isArray(items) ||
+    items.length === 0
+  ) {
+    container.innerHTML =
+      '<div class="muted" style="padding:12px 0;">Aucune connaissance ajoutée.</div>';
+
+    return;
+  }
+
+  items.forEach((item, index) => {
+
+    const box =
+      document.createElement('div');
+
+    box.style.cssText =
+      'padding:14px;margin-top:12px;border-radius:12px;background:rgba(255,255,255,.04);';
+
+    box.innerHTML =
+      '<label>Question</label>' +
+
+      '<input type="text" ' +
+      'class="botKnowledgeQuestion" ' +
+      'data-index="' + index + '" ' +
+      'value="' + escapeBotHtml(item.question || '') + '" ' +
+      'placeholder="Exemple : Quels sont les horaires ?" ' +
+      'style="width:100%;margin-top:8px;">' +
+
+      '<label style="display:block;margin-top:12px;">Réponse</label>' +
+
+      '<textarea ' +
+      'class="botKnowledgeAnswer" ' +
+      'data-index="' + index + '" ' +
+      'rows="4" ' +
+      'style="width:100%;margin-top:8px;">' +
+      escapeBotHtml(item.answer || '') +
+      '</textarea>' +
+
+      '<button type="button" class="btn" ' +
+      'onclick="removeBotKnowledge(' + index + ')" ' +
+      'style="margin-top:10px;">' +
+      '🗑️ Supprimer</button>';
+
+    container.appendChild(box);
+  });
+}
+
+function escapeBotHtml(value) {
+
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function addBotKnowledge() {
+
+  if (!schoolFlowBotConfig) {
+    schoolFlowBotConfig = {};
+  }
+
+  if (
+    !Array.isArray(
+      schoolFlowBotConfig.knowledge
+    )
+  ) {
+    schoolFlowBotConfig.knowledge = [];
+  }
+
+  schoolFlowBotConfig.knowledge.push({
+    question: '',
+    answer: ''
+  });
+
+  renderBotKnowledge(
+    schoolFlowBotConfig.knowledge
+  );
+}
+
+function removeBotKnowledge(index) {
+
+  if (
+    !schoolFlowBotConfig ||
+    !Array.isArray(
+      schoolFlowBotConfig.knowledge
+    )
+  ) {
+    return;
+  }
+
+  schoolFlowBotConfig.knowledge.splice(
+    index,
+    1
+  );
+
+  renderBotKnowledge(
+    schoolFlowBotConfig.knowledge
+  );
+}
+
+function collectBotKnowledge() {
+
+  const questions =
+    document.querySelectorAll(
+      '.botKnowledgeQuestion'
+    );
+
+  const answers =
+    document.querySelectorAll(
+      '.botKnowledgeAnswer'
+    );
+
+  const result = [];
+
+  questions.forEach(
+    (question, index) => {
+
+      const q =
+        String(
+          question.value || ''
+        ).trim();
+
+      const a =
+        String(
+          answers[index]?.value || ''
+        ).trim();
+
+      if (q && a) {
+        result.push({
+          question: q,
+          answer: a
+        });
+      }
+    }
+  );
+
+  return result;
+}
+
+async function saveBotConfig() {
+
+  const status =
+    document.getElementById(
+      'botSaveStatus'
+    );
+
+  try {
+
+    const config = {
+      ...(schoolFlowBotConfig || {}),
+
+      enabled:
+        document.getElementById(
+          'botEnabled'
+        )?.checked === true,
+
+      assistantName:
+        document.getElementById(
+          'botAssistantName'
+        )?.value?.trim() ||
+        'Assistant School Flow',
+
+      welcomeMessage:
+        document.getElementById(
+          'botWelcomeMessage'
+        )?.value?.trim() ||
+        '',
+
+      unknownMessage:
+        document.getElementById(
+          'botUnknownMessage'
+        )?.value?.trim() ||
+        '',
+
+      humanContact: {
+
+        ...(
+          (schoolFlowBotConfig || {})
+            .humanContact || {}
+        ),
+
+        name:
+          document.getElementById(
+            'botHumanName'
+          )?.value?.trim() ||
+          'Assistance de l’établissement',
+
+        phone:
+          document.getElementById(
+            'botHumanPhone'
+          )?.value?.trim() ||
+          ''
+      },
+
+      knowledge:
+        collectBotKnowledge()
+    };
+
+    const response =
+      await fetch(
+        '/api/bot/config',
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type':
+              'application/json'
+          },
+
+          body:
+            JSON.stringify(config)
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!data.success) {
+      throw new Error(
+        data.message ||
+        'Impossible d’enregistrer.'
+      );
+    }
+
+    schoolFlowBotConfig =
+      data.config || config;
+
+    if (status) {
+      status.textContent =
+        '✅ Configuration enregistrée.';
+    }
+
+    if (
+      typeof toast === 'function'
+    ) {
+      toast(
+        '✓ Agent School Flow enregistré.'
+      );
+    }
+
+  } catch (error) {
+
+    console.error(
+      'School Flow Bot save:',
+      error
+    );
+
+    if (status) {
+      status.textContent =
+        '❌ ' + error.message;
+    }
+  }
+}
+
+document.addEventListener(
+  'DOMContentLoaded',
+  () => {
+    loadBotConfig();
+  }
+);
+
+</script>
+
+
+<!-- SCHOOL FLOW — APPAIRAGE WHATSAPP PAR CODE -->
+
+\n
+<script id="school-flow-red-ui-engine">
+(function () {
+  'use strict';
+
+  const INTRO_TIME = 5000;
+
+  function getLoginBox() {
+    return document.getElementById('loginAccountBox');
+  }
+
+  function getIntro() {
+    return document.getElementById('schoolFlowRedIntro');
+  }
+
+  function getGate() {
+    return document.getElementById('schoolFlowRedGate');
+  }
+
+  function getMount() {
+    return document.getElementById('schoolFlowOriginalLoginMount');
+  }
+
+  function isLoginVisible() {
+    const box = getLoginBox();
+
+    if (!box) return false;
+
+    const style = window.getComputedStyle(box);
+
+    return (
+      style.display !== 'none' &&
+      style.visibility !== 'hidden'
+    );
+  }
+
+  /* SCHOOL_FLOW_AUTH_DOM_FIX_V1 */
+  function moveLoginIntoGate() {
+    const mount = getMount();
+
+    if (!mount) return;
+
+    /*
+     * IMPORTANT :
+     * Tout le système d'authentification doit être dans le
+     * portail rouge. Sinon le verrouillage masque le formulaire
+     * d'inscription et le message de connexion.
+     */
+    const elements = [
+      document.getElementById('loginAccountBox'),
+      document.getElementById('registerAccountBox'),
+      document.getElementById('accountMessage')
+    ];
+
+    elements.forEach(function (element) {
+      if (element && !mount.contains(element)) {
+        mount.appendChild(element);
+      }
+    });
+  }
+
+  function hideApplicationBehindGate() {
+    document.documentElement.classList.add('sf-red-auth-active');
+    document.body.classList.add('sf-red-auth-active');
+  }
+
+  function releaseApplication() {
+    const gate = getGate();
+
+    if (gate) {
+      gate.classList.remove('sf-gate-visible');
+      gate.style.display = 'none';
+    }
+
+    document.documentElement.classList.remove('sf-red-auth-active');
+    document.body.classList.remove('sf-red-auth-active');
+  }
+
+  function showLoginGate() {
+    moveLoginIntoGate();
+
+    const gate = getGate();
+
+    if (gate) {
+      gate.classList.add('sf-gate-visible');
+      gate.style.display = 'flex';
+    }
+
+    hideApplicationBehindGate();
+  }
+
+  function startRedInterface() {
+    moveLoginIntoGate();
+
+    const intro = getIntro();
+
+    if (intro) {
+      setTimeout(function () {
+        intro.classList.add('sf-intro-hidden');
+
+        setTimeout(function () {
+          if (isLoginVisible()) {
+            showLoginGate();
+          } else {
+            releaseApplication();
+          }
+        }, 700);
+      }, INTRO_TIME);
+    } else if (isLoginVisible()) {
+      showLoginGate();
+    }
+
+    const loginBox = getLoginBox();
+
+    if (loginBox) {
+      const observer = new MutationObserver(function () {
+        const registerBox = document.getElementById('registerAccountBox');
+
+        const registerVisible = registerBox &&
+          window.getComputedStyle(registerBox).display !== 'none' &&
+          window.getComputedStyle(registerBox).visibility !== 'hidden';
+
+        if (!isLoginVisible() && !registerVisible) {
+          releaseApplication();
+        }
+      });
+
+      observer.observe(loginBox, {
+        attributes: true,
+        attributeFilter: ['style', 'class']
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startRedInterface);
+  } else {
+    startRedInterface();
+  }
+
+  window.schoolFlowRedUI = {
+    showLogin: showLoginGate,
+    release: releaseApplication
+  };
+})();
+</script>
+
+
+<div
+  id="schoolFlowExclusionModal"
+  class="sf-exclusion-modal"
+  onclick="if(event.target===this) closeExclusionModal()"
+>
+  <div class="sf-exclusion-box">
+
+    <h2 id="exclusionModalTitle">
+      🚫 Exclusion temporaire
+    </h2>
+
+    <p class="muted" id="exclusionStudentLabel">
+      Élève
+    </p>
+
+    <input
+      type="hidden"
+      id="exclusionStudentId"
+    >
+
+    <input
+      type="hidden"
+      id="exclusionType"
+      value="temporary"
+    >
+
+    <label for="exclusionStartDate">
+      📅 Date de début
+    </label>
+
+    <input
+      type="date"
+      id="exclusionStartDate"
+    >
+
+    <div id="temporaryExclusionFields">
+
+      <label for="exclusionDays">
+        📆 Nombre de jours
+      </label>
+
+      <input
+        type="number"
+        id="exclusionDays"
+        min="1"
+        step="1"
+        value="3"
+        oninput="updateExclusionEndDate()"
+      >
+
+      <p
+        class="muted"
+        id="exclusionEndDatePreview"
+      >
+        Date de fin : —
+      </p>
+
+    </div>
+
+    <label for="exclusionReason">
+      📝 Motif
+    </label>
+
+    <textarea
+      id="exclusionReason"
+      rows="4"
+      placeholder="Sélectionnez ou saisissez le motif de l'exclusion..."
+    ></textarea>
+
+    <div
+      id="exclusionPreview"
+      class="sf-exclusion-preview"
+    >
+      Le message destiné aux parents apparaîtra ici.
+    </div>
+
+    <div
+      id="exclusionStatus"
+      class="sf-exclusion-status"
+    ></div>
+
+    <div
+      style="
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+        margin-top:20px;
+      "
+    >
+
+      <button
+        class="btn"
+        type="button"
+        onclick="closeExclusionModal()"
+      >
+        Annuler
+      </button>
+
+      <button
+        class="btn"
+        type="button"
+        onclick="saveAndSendExclusion()"
+      >
+        🚫 Confirmer et envoyer aux parents
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+
+<script id="school-flow-exclusion-js">
+
+let schoolFlowExclusionStudent = null;
+
+function sfTodayInputDate() {
+  const now = new Date();
+
+  const year = now.getFullYear();
+  const month = String(
+    now.getMonth() + 1
+  ).padStart(2, '0');
+
+  const day = String(
+    now.getDate()
+  ).padStart(2, '0');
+
+  return year + '-' + month + '-' + day;
+}
+
+function sfFormatDate(value) {
+  if (!value) return '—';
+
+  const parts = String(value)
+    .split('-')
+    .map(Number);
+
+  if (parts.length !== 3) {
+    return String(value);
+  }
+
+  const date = new Date(
+    parts[0],
+    parts[1] - 1,
+    parts[2]
+  );
+
+  return date.toLocaleDateString(
+    'fr-FR',
+    {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    }
+  );
+}
+
+function sfCalculateEndDate(startDate, days) {
+  if (!startDate || !days) return '';
+
+  const parts = String(startDate)
+    .split('-')
+    .map(Number);
+
+  if (parts.length !== 3) return '';
+
+  const date = new Date(
+    parts[0],
+    parts[1] - 1,
+    parts[2]
+  );
+
+  date.setDate(
+    date.getDate() + Number(days) - 1
+  );
+
+  const year = date.getFullYear();
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, '0');
+
+  const day = String(
+    date.getDate()
+  ).padStart(2, '0');
+
+  return year + '-' + month + '-' + day;
+}
+
+function getExclusionStudent(studentId) {
+  return students.find(
+    s => String(s.id) === String(studentId)
+  ) || null;
+}
+
+function openExclusionModal(type, studentId) {
+
+  const student = getExclusionStudent(studentId);
+
+  if (!student) {
+    alert('Élève introuvable.');
+    return;
+  }
+
+  schoolFlowExclusionStudent = student;
+
+  const modal =
+    document.getElementById(
+      'schoolFlowExclusionModal'
+    );
+
+  const typeInput =
+    document.getElementById(
+      'exclusionType'
+    );
+
+  const idInput =
+    document.getElementById(
+      'exclusionStudentId'
+    );
+
+  const title =
+    document.getElementById(
+      'exclusionModalTitle'
+    );
+
+  const label =
+    document.getElementById(
+      'exclusionStudentLabel'
+    );
+
+  const temporary =
+    document.getElementById(
+      'temporaryExclusionFields'
+    );
+
+  const start =
+    document.getElementById(
+      'exclusionStartDate'
+    );
+
+  const days =
+    document.getElementById(
+      'exclusionDays'
+    );
+
+  const reason =
+    document.getElementById(
+      'exclusionReason'
+    );
+
+  const preview =
+    document.getElementById(
+      'exclusionPreview'
+    );
+
+  const status =
+    document.getElementById(
+      'exclusionStatus'
+    );
+
+  typeInput.value = type;
+  idInput.value = String(student.id);
+
+  label.textContent =
+    '👤 ' +
+    (student.name ||
+      student.fullName ||
+      'Élève') +
+    ' — ' +
+    (student.className ||
+      'Classe non précisée');
+
+  start.value = sfTodayInputDate();
+
+  days.value = '3';
+
+  reason.value = '';
+
+  status.textContent = '';
+
+  if (type === 'temporary') {
+    title.textContent =
+      '🚫 Exclusion temporaire';
+
+    temporary.style.display = '';
+
+    updateExclusionEndDate();
+
+  } else {
+    title.textContent =
+      '⛔ Exclusion définitive';
+
+    temporary.style.display = 'none';
+
+    preview.textContent =
+      'Le message d’exclusion définitive sera généré après confirmation.';
+  }
+
+  modal.classList.add('show');
+
+  updateExclusionPreview();
+}
+
+function closeExclusionModal() {
+
+  const modal =
+    document.getElementById(
+      'schoolFlowExclusionModal'
+    );
+
+  if (modal) {
+    modal.classList.remove('show');
+  }
+
+  schoolFlowExclusionStudent = null;
+}
+
+function updateExclusionEndDate() {
+
+  const start =
+    document.getElementById(
+      'exclusionStartDate'
+    )?.value || '';
+
+  const days =
+    Number(
+      document.getElementById(
+        'exclusionDays'
+      )?.value || 0
+    );
+
+  const output =
+    document.getElementById(
+      'exclusionEndDatePreview'
+    );
+
+  if (!output) return;
+
+  const end =
+    sfCalculateEndDate(
+      start,
+      days
+    );
+
+  output.textContent =
+    end
+      ? 'Date de fin : ' +
+        sfFormatDate(end)
+      : 'Date de fin : —';
+
+  updateExclusionPreview();
+}
+
+function buildTemporaryExclusionMessage(
+  student,
+  startDate,
+  endDate,
+  days,
+  reason
+) {
+
+  const schoolName =
+    currentSchool ||
+    'L’établissement';
+
+  const studentName =
+    student.name ||
+    student.fullName ||
+    'Votre enfant';
+
+  const className =
+    student.className ||
+    'Classe non précisée';
+
+  return [
+    '╭━━━━━━━━━━━━━━━━━━━━━━━━━━╮',
+    '┃ 🏫 *' + schoolName + '*',
+    '┃ *AVIS D’EXCLUSION*',
+    '╰━━━━━━━━━━━━━━━━━━━━━━━━━━╯',
+    '',
+    '*C•H•E•R•S  P•A•R•E•N•T•S,*',
+    '',
+    'Nous vous informons que votre enfant *' +
+      studentName +
+      '*, inscrit(e) en classe de *' +
+      className +
+      '*, fait l’objet d’une *exclusion temporaire*.',
+    '',
+    '📅 *Début :* ' +
+      sfFormatDate(startDate),
+    '📅 *Fin :* ' +
+      sfFormatDate(endDate),
+    '⏳ *Durée :* ' +
+      days +
+      ' jour(s)',
+    '📝 *Motif :* ' +
+      reason,
+    '',
+    'Pendant cette période, l’élève ne sera pas autorisé(e) à participer normalement aux activités scolaires.',
+    '',
+    'Nous vous invitons à prendre connaissance de cette décision et à accompagner votre enfant dans le respect du règlement de l’établissement.',
+    '',
+    'Pour plus de détails ou toute demande d’explication, veuillez contacter directement *l’administration de l’établissement*.',
+    '',
+    '*La Direction*',
+    '*' + schoolName + '*',
+    '',
+    '— *SCHOOL FLOW* —'
+  ].join('\n');
+}
+
+function buildPermanentExclusionMessage(
+  student,
+  date,
+  reason
+) {
+
+  const schoolName =
+    currentSchool ||
+    'L’établissement';
+
+  const studentName =
+    student.name ||
+    student.fullName ||
+    'Votre enfant';
+
+  const className =
+    student.className ||
+    'Classe non précisée';
+
+  return [
+    '╭━━━━━━━━━━━━━━━━━━━━━━━━━━╮',
+    '┃ 🏫 *' + schoolName + '*',
+    '┃ *AVIS D’EXCLUSION DÉFINITIVE*',
+    '╰━━━━━━━━━━━━━━━━━━━━━━━━━━╯',
+    '',
+    '*C•H•E•R•S  P•A•R•E•N•T•S,*',
+    '',
+    'Nous vous informons officiellement que votre enfant *' +
+      studentName +
+      '*, inscrit(e) en classe de *' +
+      className +
+      '*, fait l’objet d’une *exclusion définitive* de l’établissement.',
+    '',
+    '📅 *Date d’effet :* ' +
+      sfFormatDate(date),
+    '📝 *Motif :* ' +
+      reason,
+    '',
+    'Cette décision prend effet à compter de la date indiquée ci-dessus.',
+    '',
+    'Elle est prise conformément aux dispositions et au règlement intérieur de l’établissement.',
+    '',
+    'Nous vous invitons à vous rapprocher de l’administration afin de prendre connaissance des détails de la décision et des éventuelles démarches à effectuer.',
+    '',
+    'Pour toute information complémentaire, veuillez contacter directement *l’administration de l’établissement*.',
+    '',
+    '*La Direction*',
+    '*' + schoolName + '*',
+    '',
+    '— *SCHOOL FLOW* —'
+  ].join('\n');
+}
+
+function updateExclusionPreview() {
+
+  const student =
+    schoolFlowExclusionStudent;
+
+  if (!student) return;
+
+  const type =
+    document.getElementById(
+      'exclusionType'
+    )?.value || 'temporary';
+
+  const startDate =
+    document.getElementById(
+      'exclusionStartDate'
+    )?.value || '';
+
+  const days =
+    Number(
+      document.getElementById(
+        'exclusionDays'
+      )?.value || 0
+    );
+
+  const reason =
+    document.getElementById(
+      'exclusionReason'
+    )?.value.trim() || '';
+
+  const preview =
+    document.getElementById(
+      'exclusionPreview'
+    );
+
+  if (!preview) return;
+
+  if (!startDate || !reason) {
+    preview.textContent =
+      'Le message destiné aux parents apparaîtra ici après saisie de la date et du motif.';
+    return;
+  }
+
+  if (type === 'temporary') {
+
+    const endDate =
+      sfCalculateEndDate(
+        startDate,
+        days
+      );
+
+    if (!endDate || days < 1) {
+      preview.textContent =
+        'Veuillez indiquer une durée valide.';
+      return;
+    }
+
+    preview.textContent =
+      buildTemporaryExclusionMessage(
+        student,
+        startDate,
+        endDate,
+        days,
+        reason
+      );
+
+  } else {
+
+    preview.textContent =
+      buildPermanentExclusionMessage(
+        student,
+        startDate,
+        reason
+      );
+  }
+}
+
+async function saveAndSendExclusion() {
+
+  const student =
+    schoolFlowExclusionStudent;
+
+  if (!student) {
+    alert('Élève introuvable.');
+    return;
+  }
+
+  const type =
+    document.getElementById(
+      'exclusionType'
+    )?.value || '';
+
+  const startDate =
+    document.getElementById(
+      'exclusionStartDate'
+    )?.value || '';
+
+  const days =
+    Number(
+      document.getElementById(
+        'exclusionDays'
+      )?.value || 0
+    );
+
+  const reason =
+    document.getElementById(
+      'exclusionReason'
+    )?.value.trim() || '';
+
+  const status =
+    document.getElementById(
+      'exclusionStatus'
+    );
+
+  if (!startDate) {
+    alert('Sélectionnez une date.');
+    return;
+  }
+
+  if (!reason) {
+    alert('Indiquez le motif de l’exclusion.');
+    return;
+  }
+
+  if (
+    type === 'temporary' &&
+    (!Number.isInteger(days) || days < 1)
+  ) {
+    alert(
+      'Le nombre de jours doit être supérieur ou égal à 1.'
+    );
+    return;
+  }
+
+  const endDate =
+    type === 'temporary'
+      ? sfCalculateEndDate(
+          startDate,
+          days
+        )
+      : startDate;
+
+  const message =
+    type === 'temporary'
+      ? buildTemporaryExclusionMessage(
+          student,
+          startDate,
+          endDate,
+          days,
+          reason
+        )
+      : buildPermanentExclusionMessage(
+          student,
+          startDate,
+          reason
+        );
+
+  if (status) {
+    status.textContent =
+      '⏳ Enregistrement de l’exclusion...';
+  }
+
+  try {
+
+    const saved =
+      await api(
+        '/api/students/exclusion',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            studentId: String(student.id),
+            exclusionType: type,
+            startDate,
+            days:
+              type === 'temporary'
+                ? days
+                : null,
+            reason
+          })
+        }
+      );
+
+    if (!saved || !saved.success) {
+      throw new Error(
+        saved?.message ||
+        'Impossible d’enregistrer l’exclusion.'
+      );
+    }
+
+    if (status) {
+      status.textContent =
+        '⏳ Exclusion enregistrée. Envoi WhatsApp aux parents...';
+    }
+
+    const sendResult =
+      await api(
+        '/api/whatsapp/send-to-parents',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            studentId: String(student.id),
+            message
+          })
+        }
+      );
+
+    const sent =
+      Number(
+        sendResult?.sent || 0
+      );
+
+    const total =
+      Number(
+        sendResult?.totalParents || 0
+      );
+
+    closeExclusionModal();
+
+    await loadStudents();
+
+    alert(
+      '✓ SCHOOL FLOW\n\n' +
+      saved.message +
+      '\n\n' +
+      'WhatsApp envoyés : ' +
+      sent +
+      '/' +
+      total
+    );
+
+    openStudentProfile(
+      student.id
+    );
+
+  } catch (error) {
+
+    console.error(
+      'SchoolFlow exclusion:',
+      error
+    );
+
+    if (status) {
+      status.textContent =
+        '❌ ' +
+        (
+          error?.message ||
+          'Erreur lors de l’opération.'
+        );
+    }
+
+    alert(
+      error?.message ||
+      'Erreur lors de l’enregistrement de l’exclusion.'
+    );
+  }
+}
+
+document.addEventListener(
+  'input',
+  function(event) {
+
+    if (
+      event.target &&
+      (
+        event.target.id ===
+          'exclusionReason' ||
+        event.target.id ===
+          'exclusionStartDate' ||
+        event.target.id ===
+          'exclusionDays'
+      )
+    ) {
+      updateExclusionPreview();
+    }
+  }
+);
+
+document.addEventListener(
+  'change',
+  function(event) {
+
+    if (
+      event.target &&
+      event.target.id ===
+        'exclusionStartDate'
+    ) {
+      updateExclusionEndDate();
+    }
+  }
+);
+
+</script>
+
+
+<script id="school-flow-multi-sessions-script">
+(function () {
+  const panel = document.getElementById('schoolFlowMultiSessionsPanel');
+  if (!panel || panel.dataset.initialized) return;
+  panel.dataset.initialized = 'true';
+
+  const message = document.getElementById('sfMultiSessionMessage');
+  const list = document.getElementById('sfMultiSessionList');
+  const idInput = document.getElementById('sfMultiSessionId');
+  const phoneInput = document.getElementById('sfMultiSessionPhone');
+  const createButton = document.getElementById('sfMultiSessionCreate');
+  const refreshButton = document.getElementById('sfMultiSessionRefresh');
+
+  function say(text) {
+    message.textContent = text || '';
+  }
+
+  async function callApi(url, options) {
+    if (typeof api !== 'function') {
+      throw new Error('Fonction API School Flow introuvable.');
+    }
+    const result = await api(url, options || {});
+    if (!result) throw new Error('Serveur inaccessible. Réessayez.');
+    if (!result.success) {
+      throw new Error(result.message || 'Opération impossible.');
+    }
+    return result;
+  }
+
+  function makeButton(label, action) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = label;
+    button.style.margin = '4px';
+    button.addEventListener('click', action);
+    return button;
+  }
+
+  async function loadSessions() {
+    try {
+      const result = await callApi('/api/whatsapp/sessions');
+      renderSessions(result.sessions || []);
+    } catch (error) {
+      say('Erreur : ' + error.message);
+    }
+  }
+
+  function renderSessions(sessions) {
+    list.replaceChildren();
+
+    if (!sessions.length) {
+      const empty = document.createElement('p');
+      empty.textContent = 'Aucune session supplémentaire créée pour cet établissement.';
+      list.appendChild(empty);
+      return;
+    }
+
+    sessions.forEach(function (session) {
+      const card = document.createElement('div');
+      card.style.cssText =
+        'border:1px solid #888;border-radius:8px;padding:12px;margin-top:12px';
+
+      const title = document.createElement('h3');
+      title.textContent = 'Session : ' + session.sessionId;
+      card.appendChild(title);
+
+      const status = document.createElement('p');
+      status.textContent =
+        'État : ' + (session.status || 'inconnu') +
+        ' | Numéro : ' + (session.phone || 'non défini');
+      card.appendChild(status);
+
+      const phoneLabel = document.createElement('label');
+      phoneLabel.textContent = 'Numéro international, sans + : ';
+      const phone = document.createElement('input');
+      phone.type = 'tel';
+      phone.placeholder = '243XXXXXXXXX';
+      phone.value = session.phone || '';
+      phone.autocomplete = 'off';
+      phone.style.maxWidth = '220px';
+      phoneLabel.appendChild(phone);
+      card.appendChild(phoneLabel);
+
+      const resultText = document.createElement('p');
+      resultText.setAttribute('role', 'status');
+      card.appendChild(resultText);
+
+      const sessionUrl =
+        '/api/whatsapp/sessions/' + encodeURIComponent(session.sessionId);
+
+      card.appendChild(makeButton('Connecter', async function () {
+        try {
+          say('');
+          const result = await callApi(sessionUrl + '/connect', {
+            method: 'POST',
+            body: JSON.stringify({})
+          });
+          say(result.message || 'Demande de connexion envoyée.');
+          await loadSessions();
+        } catch (error) {
+          resultText.textContent = error.message;
+        }
+      }));
+
+      card.appendChild(makeButton('Obtenir le code', async function () {
+        const cleanPhone = phone.value.replace(/\D/g, '');
+        if (cleanPhone.length < 8 || cleanPhone.length > 15) {
+          resultText.textContent =
+            'Entre un numéro international valide, sans le signe +.';
+          return;
+        }
+        try {
+          resultText.textContent = 'Demande en cours…';
+          const result = await callApi(sessionUrl + '/pairing-code', {
+            method: 'POST',
+            body: JSON.stringify({ phone: cleanPhone })
+          });
+          const code = result.session && result.session.pairingCode;
+          resultText.textContent = code
+            ? 'Code d’appairage : ' + code
+            : (result.message || 'Aucun code retourné.');
+          await loadSessions();
+        } catch (error) {
+          resultText.textContent = error.message;
+        }
+      }));
+
+      card.appendChild(makeButton('Mettre en pause', async function () {
+        if (!confirm('Mettre en pause uniquement la session ' +
+                     session.sessionId + ' ?')) return;
+        try {
+          const result = await callApi(sessionUrl + '/disconnect', {
+            method: 'POST',
+            body: JSON.stringify({})
+          });
+          say(result.message || 'Session mise en pause.');
+          await loadSessions();
+        } catch (error) {
+          resultText.textContent = error.message;
+        }
+      }));
+
+      card.appendChild(makeButton('Supprimer la session', async function () {
+        if (!confirm(
+          'ATTENTION : supprimer définitivement la session ' +
+          session.sessionId + ' ?\\n\\nLes identifiants de cette session seront supprimés.'
+        )) return;
+
+        try {
+          resultText.textContent = 'Suppression en cours...';
+
+          const result = await callApi(sessionUrl, {
+            method: 'DELETE'
+          });
+
+          say(result.message || 'Session supprimée.');
+          await loadSessions();
+        } catch (error) {
+          resultText.textContent = 'Erreur : ' + error.message;
+        }
+      }));
+
+      list.appendChild(card);
+    });
+  }
+
+  createButton.addEventListener('click', async function () {
+    const sessionId = idInput.value.trim();
+    const phone = phoneInput.value.replace(/\D/g, '');
+
+    if (!/^[a-zA-Z0-9_-]{1,40}$/.test(sessionId)) {
+      say('Identifiant invalide : utilise 1 à 40 lettres, chiffres, _ ou -.');
+      return;
+    }
+    if (phone && (phone.length < 8 || phone.length > 15)) {
+      say('Numéro invalide : utilise le format international sans +.');
+      return;
+    }
+
+    createButton.disabled = true;
+    try {
+      const result = await callApi('/api/whatsapp/sessions', {
+        method: 'POST',
+        body: JSON.stringify({ sessionId: sessionId, phone: phone })
+      });
+      say(result.message || 'Session créée.');
+      await loadSessions();
+    } catch (error) {
+      say('Erreur : ' + error.message);
+    } finally {
+      createButton.disabled = false;
+    }
+  });
+
+  refreshButton.addEventListener('click', loadSessions);
+  loadSessions();
+})();
+
+/* Restore the selected layout on this device. */
+try {
+  const savedMode = localStorage.getItem('schoolFlowDeviceMode');
+  if (['phone','tablet','desktop'].includes(savedMode)) {
+    document.body.classList.add('sf-device-' + savedMode);
+  }
+} catch (error) {}
+
+</script>
+
+
+
+
+\n
+<script id="schoolFlowStudentSearch">
+(function () {
+  function init() {
+    const input = document.getElementById('sfStudentSearch');
+    const results = document.getElementById('sfSearchResults');
+    const wrap = document.getElementById('sfSearchWrap');
+    const dashboard = document.getElementById('dashboard');
+    const login = document.getElementById('schoolAccountScreen');
+
+    if (!input || !results || !wrap || !dashboard) return;
+
+    // Afficher la recherche sous le titre, avant la carte de l'établissement.
+    dashboard.insertBefore(wrap, dashboard.firstChild);
+
+    function loggedIn() {
+      if (login) {
+        const s = getComputedStyle(login);
+        if (s.display !== 'none' && s.visibility !== 'hidden' &&
+            login.getBoundingClientRect().width > 0) return false;
+      }
+      return true;
+    }
+
+    function normalize(value) {
+      return String(value || '').normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    }
+
+    function search() {
+      const q = normalize(input.value);
+      results.innerHTML = '';
+
+      if (!q || !loggedIn()) {
+        results.style.display = 'none';
+        return;
+      }
+
+      const all = Array.isArray(students) ? students : [];
+      const matches = all.filter(s => {
+        const text = [
+          s.name, s.fullName, s.matricule, s.className,
+          s.fatherName, s.motherName,
+          s.parents && s.parents.father && s.parents.father.name,
+          s.parents && s.parents.mother && s.parents.mother.name
+        ].map(normalize).join(' ');
+        return text.includes(q);
+      }).slice(0, 10);
+
+      if (!matches.length) {
+        const empty = document.createElement('div');
+        empty.textContent = 'Aucun résultat correspondant.';
+        empty.style.cssText = 'padding:14px;color:#cbd5e1;';
+        results.appendChild(empty);
+      } else {
+        matches.forEach(s => {
+          const item = document.createElement('button');
+          item.type = 'button';
+          item.setAttribute('role', 'option');
+
+          const name = s.name || s.fullName || 'Élève sans nom';
+          const detail = (s.className || 'Classe inconnue') +
+            ' · Matricule : ' + (s.matricule || 'À attribuer');
+
+          const title = document.createElement('div');
+          title.textContent = name;
+          title.style.cssText = 'font-weight:700;color:#fff;';
+
+          const subtitle = document.createElement('div');
+          subtitle.textContent = detail;
+          subtitle.style.cssText = 'font-size:12px;color:#94a3b8;margin-top:4px;';
+
+          item.append(title, subtitle);
+          item.style.cssText = 'display:block;width:100%;text-align:left;'+
+            'padding:12px 14px;border:0;border-bottom:1px solid #263244;'+
+            'background:#101827;cursor:pointer;color:#fff;';
+
+          item.addEventListener('click', function () {
+            results.style.display = 'none';
+            input.value = '';
+            if (typeof window.openStudentProfile === 'function') {
+              window.openStudentProfile(s.id);
+            } else {
+              alert('Ouverture de la fiche indisponible. Ouvre la rubrique Élèves.');
+            }
+          });
+          results.appendChild(item);
+        });
+      }
+      results.style.display = 'block';
+    }
+
+    input.addEventListener('input', search);
+    input.addEventListener('focus', search);
+    document.addEventListener('click', e => {
+      if (!wrap.contains(e.target)) results.style.display = 'none';
+    });
+
+    // Les élèves peuvent être chargés après l'ouverture de la page.
+    document.addEventListener('keyup', e => {
+      if (e.key === 'Escape') results.style.display = 'none';
+    });
+
+    const observer = new MutationObserver(() => {
+      if (!loggedIn()) {
+        wrap.style.display = 'none';
+        results.style.display = 'none';
+      } else {
+        wrap.style.display = '';
+      }
+    });
+    observer.observe(document.body, {
+      childList: true, subtree: true, attributes: true,
+      attributeFilter: ['style', 'class']
+    });
+
+    wrap.style.display = loggedIn() ? '' : 'none';
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, {once:true});
+  } else {
+    init();
+  }
+})();
+</script>
+
+<!-- SCHOOL FLOW PWA REGISTER -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/sw.js')
+      .catch(function (error) {
+        console.error('SCHOOL FLOW PWA:', error);
+      });
+  });
+}
+</script>
+
+</body>
+</html>

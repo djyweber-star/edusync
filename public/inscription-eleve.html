@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SchoolFlow — Inscription des élèves</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Arial,sans-serif;
+  background:#050b16;
+  color:#f8fafc;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px
+}
+.card{
+  width:100%;
+  max-width:520px;
+  background:#0b1424;
+  border:1px solid #1e3a5f;
+  border-radius:22px;
+  padding:28px;
+  box-shadow:0 20px 70px rgba(0,0,0,.5)
+}
+.logo{
+  text-align:center;
+  color:#60a5fa;
+  font-size:30px;
+  font-weight:900;
+  letter-spacing:4px
+}
+.school{
+  text-align:center;
+  margin:8px 0 25px;
+  color:#94a3b8
+}
+h1{
+  font-size:22px;
+  text-align:center;
+  margin-bottom:22px
+}
+label{
+  display:block;
+  margin:13px 0 7px;
+  color:#cbd5e1;
+  font-size:13px;
+  font-weight:700
+}
+input,select{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid #263b58;
+  background:#07101e;
+  color:white;
+  outline:none
+}
+button{
+  width:100%;
+  margin-top:22px;
+  padding:15px;
+  border:0;
+  border-radius:12px;
+  background:#2563eb;
+  color:white;
+  font-weight:800;
+  font-size:15px
+}
+#message{
+  text-align:center;
+  margin-top:18px;
+  min-height:22px;
+  color:#93c5fd
+}
+.note{
+  text-align:center;
+  color:#64748b;
+  font-size:11px;
+  margin-top:20px;
+  line-height:1.6
+}
+</style>
+
+<style id="edusync-registration-style">
+*{box-sizing:border-box}
+body{margin:0;padding:12px;width:100%;overflow-x:hidden}
+.edusync-brand{text-align:center;margin:4px 0 18px}
+.edusync-brand .logo{font-size:22px;font-weight:900;letter-spacing:1.5px}
+.edusync-brand .school{font-size:18px;font-weight:800;margin-top:4px;word-break:break-word}
+.edusync-brand .subtitle{font-size:12px;margin-top:3px;opacity:.65}
+.container,.card,form{max-width:100%!important;width:100%!important}
+input,select,button{max-width:100%;font-size:15px}
+h1,h2,h3{font-size:20px}
+@media(max-width:420px){
+  body{padding:10px}
+  .edusync-brand{margin-bottom:14px}
+  .edusync-brand .logo{font-size:20px}
+  .edusync-brand .school{font-size:16px}
+  input,select,button{padding:11px!important}
+}
+</style>
+</head>
+
+<body>
+<style>
+  .edusync-brand{
+    text-align:center;
+    margin-bottom:25px;
+  }
+
+  .edusync-brand .logo{
+    font-size:30px;
+    font-weight:900;
+    letter-spacing:2px;
+  }
+
+  .edusync-brand .school{
+    margin-top:8px;
+    font-size:22px;
+    font-weight:800;
+  }
+
+  .edusync-brand .subtitle{
+    margin-top:5px;
+    opacity:.7;
+    font-size:14px;
+  }
+</style>
+
+<div class="edusync-brand">
+    <div class="logo">SchoolFlow</div>
+    <div class="school" id="schoolDisplay">Inscription scolaire</div>
+    <div class="subtitle">Inscription des élèves</div>
+  </div>
+
+<div class="card">
+
+  <div class="logo">SchoolFlow</div>
+  <div class="school" id="schoolName">Inscription scolaire</div>
+
+  <h1>Inscription de l'élève</h1>
+
+  <form id="studentForm">
+
+    <label>Nom complet de l'élève</label>
+    <input id="fullName" required placeholder="Nom et prénom(s)">
+
+    <label>Nom du père</label>
+    <input id="fatherName" required placeholder="Nom complet du père">
+
+    <label>Téléphone du père</label>
+    <input id="fatherPhone" required type="tel" placeholder="+243 ...">
+
+    <label>Nom de la mère</label>
+    <input id="motherName" required placeholder="Nom complet de la mère">
+
+    <label>Téléphone de la mère</label>
+    <input id="motherPhone" required type="tel" placeholder="+243 ...">
+
+    <label>Classe</label>
+    <input id="className" required placeholder="Ex. 6e ETRI">
+
+    <button type="submit">Enregistrer mon inscription</button>
+
+  </form>
+
+  <div id="message"></div>
+
+  <div class="note">
+    Vos informations sont transmises à l'établissement via SchoolFlow.
+  </div>
+
+</div>
+
+<script>
+const SchoolFlow_SCHOOL_NAME = document.getElementById("schoolDisplay");
+
+const params = new URLSearchParams(location.search);
+const schoolCode = params.get('school');
+
+if (!schoolCode) {
+  document.getElementById('studentForm').style.display = 'none';
+  document.getElementById('message').textContent =
+    'Lien d’inscription invalide ou incomplet.';
+}
+
+document.getElementById('studentForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const message = document.getElementById('message');
+  message.textContent = 'Enregistrement en cours...';
+
+  const data = {
+    schoolCode,
+    fullName: document.getElementById('fullName').value.trim(),
+    fatherName: document.getElementById('fatherName').value.trim(),
+    fatherPhone: document.getElementById('fatherPhone').value.trim(),
+    motherName: document.getElementById('motherName').value.trim(),
+    motherPhone: document.getElementById('motherPhone').value.trim(),
+    className: document.getElementById('className').value.trim()
+  };
+
+  try {
+    const response = await fetch('/api/student-registration/submit', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Inscription impossible.');
+    }
+
+    document.getElementById('studentForm').style.display = 'none';
+    message.textContent = 'Inscription enregistrée avec succès.';
+
+  } catch(error) {
+    console.error(error);
+    message.textContent = error.message;
+  }
+});
+</script>
+
+<script>
+async function loadSchoolNameFromQR(){
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("school");
+  const display = document.getElementById("schoolDisplay");
+
+  if(!code){
+    display.textContent = "Inscription scolaire";
+    return;
+  }
+
+  try{
+    const response = await fetch(
+      "/api/student-registration/school?code=" +
+      encodeURIComponent(code)
+    );
+
+    const data = await response.json();
+
+    if(data.success && data.schoolName){
+      display.textContent = data.schoolName;
+    }else{
+      display.textContent = "Inscription scolaire";
+    }
+  }catch(error){
+    console.error(error);
+    display.textContent = "Inscription scolaire";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadSchoolNameFromQR);
+</script>
+</body>
+</html>

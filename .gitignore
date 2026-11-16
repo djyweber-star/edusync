@@ -1,0 +1,45 @@
+.env
+.env.*
+!.env.example
+
+node_modules/
+.git/
+
+# Données scolaires privées
+data/*
+!data/.gitkeep
+
+# Sessions et identifiants WhatsApp
+whatsapp/session*/
+whatsapp/multi-sessions/
+whatsapp/**/creds.json
+whatsapp/**/*.backup*
+whatsapp/**/*.bak
+
+# Sauvegardes
+backups/
+backup-*/
+*.backup*
+*.bak
+
+# Fichiers temporaires
+*.log
+.DS_Store
+
+# Tests locaux et application Android
+.ui-tests/
+
+# Application Android non nécessaire sur Render
+android/
+
+# Scripts de modification ponctuelle et anciennes versions
+install-*.js
+security-v4-all-in-one.js
+server.js.erreur-retard
+capacitor.config.json
+
+# Anciennes versions de l'interface
+public/*.backup*
+public/*ancienne-version*
+public/*avant-correction*
+public/*BONNE-VERSION*

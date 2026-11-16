@@ -1,0 +1,26 @@
+{
+  "enabled": true,
+  "agents": [
+    {
+      "phone": "243856868015",
+      "name": "WEBER",
+      "role": "fondateur",
+      "level": "owner",
+      "active": true,
+      "permissions": [
+        "system.status",
+        "schools.list",
+        "whatsapp.status",
+        "diagnostic",
+        "modules.view",
+        "interface.view",
+        "configuration.view",
+        "agents.manage"
+      ]
+    }
+  ],
+  "security": {
+    "allowRemoteUpdates": false,
+    "requireConfirmationForChanges": true
+  }
+}

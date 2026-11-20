@@ -4,11 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const P = require('pino');
 const QRCode = require('qrcode');
-const {
-  default: makeWASocket,
-  useMultiFileAuthState,
-  DisconnectReason
-} = require('@whiskeysockets/baileys');
+
 
 const ROOT = path.resolve(__dirname, 'multi-sessions');
 const sessions = new Map();
@@ -171,6 +167,11 @@ async function connectSession(schoolId, sessionId) {
   entry.pairingCode = null;
 
   entry.startingPromise = (async () => {
+    const {
+      default: makeWASocket,
+      useMultiFileAuthState,
+      DisconnectReason
+    } = await import('@whiskeysockets/baileys');
     const { state, saveCreds } = await useMultiFileAuthState(directory);
 
     if (entry.intentionalDisconnect || sessions.get(key) !== entry) {

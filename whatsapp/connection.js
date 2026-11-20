@@ -1,9 +1,4 @@
-const {
-  default: makeWASocket,
-  useMultiFileAuthState,
-  DisconnectReason,
-  fetchLatestWaWebVersion
-} = require('@whiskeysockets/baileys');
+
 
 const P = require('pino');
 const { handleIncomingMessage } = require('./bot-engine');
@@ -163,6 +158,12 @@ async function startWhatsApp() {
   }
 
   startingPromise = (async () => {
+    const {
+      default: makeWASocket,
+      useMultiFileAuthState,
+      DisconnectReason,
+      fetchLatestWaWebVersion
+    } = await import('@whiskeysockets/baileys');
     intentionalDisconnect = false;
 
     await prepareSession();
